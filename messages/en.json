@@ -134,6 +134,7 @@
     "Home": {
       "Product": {
         "add_to_cart": "Add to cart",
+        "in_cart": "In cart",
         "description": "Description",
         "components": "Components",
         "no_available": "Not available",

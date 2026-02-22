@@ -36,6 +36,7 @@ export interface SubCategory {
 }
 
 export interface Product {
+  direct_add: boolean;
   section_id: string;
   product_category_price_id: string;
   offer_id: string | null;
@@ -151,6 +152,7 @@ export interface Brand {
 }
 
 export interface Offer {
+  direct_add: boolean;
   section_id: string;
   product_category_price_id: string;
   category_sub_category_id: string;

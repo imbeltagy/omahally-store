@@ -24,10 +24,15 @@ export async function fetchCartProducts() {
 export async function addProductToCart(body: {
   product_category_price_id: string;
   options: string[];
+  quantity?: number;
 }) {
-  const res = await postData<CartProduct, typeof body>(
+  const payload = {
+    ...body,
+    quantity: body.quantity ?? 1,
+  };
+  const res = await postData<CartProduct, typeof payload>(
     `${endpoints.cart.add}`,
-    body
+    payload,
   );
 
   if ("error" in res) {
@@ -45,14 +50,17 @@ export async function removeCartProduct(cart_product_id: string) {
   return res?.data;
 }
 
-export async function updateCartProduct(cart_product_id: string, add: boolean) {
+export async function updateCartProduct(
+  cart_product_id: string,
+  quantity: number,
+) {
   const res = await editData<
     CartProduct,
     {
       cart_product_id: string;
-      add: boolean;
+      quantity: number;
     }
-  >(endpoints.cart.update, "PUT", { cart_product_id, add });
+  >(endpoints.cart.update, "PUT", { cart_product_id, quantity });
 
   if ("error" in res) {
     return res;
@@ -96,7 +104,7 @@ export interface CreateOrderBody {
 export async function createOrder(body: CreateOrderBody) {
   const res = await postData<any, CreateOrderBody & { platform: "WEB" }>(
     `${endpoints.cart.createOrder}`,
-    { ...body, platform: "WEB" }
+    { ...body, platform: "WEB" },
   );
 
   if ("error" in res) {
@@ -107,7 +115,7 @@ export async function createOrder(body: CreateOrderBody) {
 
 export async function fetchPromoCode(code: string, paymentMethodId: string) {
   const res = await getData<PromoCode>(
-    endpoints.cart.fetchPromoCode(code, paymentMethodId)
+    endpoints.cart.fetchPromoCode(code, paymentMethodId),
   );
 
   if ("error" in res) {

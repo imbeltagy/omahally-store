@@ -134,6 +134,7 @@
     "Home": {
       "Product": {
         "add_to_cart": "أضف إلى السلة",
+        "in_cart": "في السلة",
         "description": "الوصف",
         "components": "المكونات",
         "no_available": "غير متوفر",

@@ -16,15 +16,18 @@ import Iconify from "@/components/iconify";
 
 import { ProductOptionGroup } from "@/types/products";
 
+import IncrementerButton from "./incrementer-button";
 import ProductOptionsSelector from "./product-options-selector";
 
 interface Props {
+  product_id: string;
   product_category_price_id: string;
   is_quantity_available: boolean;
   optionGroups: ProductOptionGroup[];
 }
 
 export default function ProductAddForm({
+  product_id,
   product_category_price_id,
   is_quantity_available,
   optionGroups,
@@ -34,7 +37,8 @@ export default function ProductAddForm({
   const { authenticated } = useAuthContext();
   const { setOpen: setNoGuestDialogOpen } = useNoGuestStore();
   const isMd = useMediaQuery("(min-width:450px)");
-  const { setProduct } = useCartStore();
+  const { setProduct, products } = useCartStore();
+  const cartProduct = products.find((item) => item.product_id === product_id);
   const [loading, setLoading] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
@@ -71,7 +75,7 @@ export default function ProductAddForm({
   const validateOptions = useCallback(() => {
     const groupErrors = optionGroups.map((group) => {
       const groupSelectedOptions = selectedOptions.filter((id) =>
-        group.options.some((opt) => opt.id === id)
+        group.options.some((opt) => opt.id === id),
       );
       const selectedCount = groupSelectedOptions.length;
 
@@ -94,13 +98,14 @@ export default function ProductAddForm({
       // Check child groups for selected parent options
       const childErrors = group.options
         .filter(
-          (option) => selectedOptions.includes(option.id) && option.child_groups
+          (option) =>
+            selectedOptions.includes(option.id) && option.child_groups,
         )
         .flatMap(
           (option) =>
             option.child_groups?.map((childGroup) => {
               const childSelectedOptions = selectedOptions.filter((id) =>
-                childGroup.options.some((opt) => opt.id === id)
+                childGroup.options.some((opt) => opt.id === id),
               );
               const childSelectedCount = childSelectedOptions.length;
 
@@ -122,7 +127,7 @@ export default function ProductAddForm({
               }
 
               return null;
-            }) || []
+            }) || [],
         );
 
       const firstChildError = childErrors.find((err) => err !== null);
@@ -214,17 +219,24 @@ export default function ProductAddForm({
       )}
 
       {/* Add to Cart Button */}
-      <LoadingButton
-        variant="contained"
-        color="primary"
-        startIcon={isMd && <Iconify icon="bxs:cart-alt" />}
-        onClick={handleAddToCart}
-        disabled={!is_quantity_available}
-        loading={loading}
-        fullWidth={!isMd}
-      >
-        {t("add_to_cart")}
-      </LoadingButton>
+      {cartProduct ? (
+        <IncrementerButton
+          cartProductId={cartProduct.id}
+          is_quantity_available={is_quantity_available}
+        />
+      ) : (
+        <LoadingButton
+          variant="contained"
+          color="primary"
+          startIcon={isMd && <Iconify icon="bxs:cart-alt" />}
+          onClick={handleAddToCart}
+          disabled={!is_quantity_available}
+          loading={loading}
+          fullWidth={!isMd}
+        >
+          {t("add_to_cart")}
+        </LoadingButton>
+      )}
     </Stack>
   );
 }

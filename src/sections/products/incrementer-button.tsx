@@ -14,24 +14,14 @@ import Iconify from "@/components/iconify";
 
 interface Props extends StackProps {
   cartProductId: string;
-  min_order_quantity: number;
-  max_order_quantity: number;
   is_quantity_available: boolean;
   addButtonProps?: ButtonProps;
 }
 
 const IncrementerButton = forwardRef<HTMLDivElement, Props>(
   (
-    {
-      cartProductId,
-      min_order_quantity,
-      max_order_quantity,
-      is_quantity_available,
-      addButtonProps,
-      sx,
-      ...other
-    },
-    ref
+    { cartProductId, is_quantity_available, addButtonProps, sx, ...other },
+    ref,
   ) => {
     const { enqueueSnackbar } = useSnackbar();
     const { products, setProduct, removeProduct } = useCartStore();
@@ -59,7 +49,7 @@ const IncrementerButton = forwardRef<HTMLDivElement, Props>(
       if (!product) return;
       (async () => {
         setLoading(true);
-        const res = await updateCartProduct(product.id, true);
+        const res = await updateCartProduct(product.id, quantity + 1);
 
         if ("error" in res) {
           enqueueSnackbar(res.error, { variant: "error" });
@@ -69,13 +59,13 @@ const IncrementerButton = forwardRef<HTMLDivElement, Props>(
         }
         setLoading(false);
       })();
-    }, [enqueueSnackbar, product, setLoading, setProduct]);
+    }, [enqueueSnackbar, product, quantity, setProduct]);
 
     const handleDecrease = useCallback(() => {
       if (!product) return;
       (async () => {
         setLoading(true);
-        const res = await updateCartProduct(product.id, false);
+        const res = await updateCartProduct(product.id, quantity - 1);
 
         if ("error" in res) {
           enqueueSnackbar(res.error, { variant: "error" });
@@ -85,7 +75,7 @@ const IncrementerButton = forwardRef<HTMLDivElement, Props>(
         }
         setLoading(false);
       })();
-    }, [enqueueSnackbar, product, setLoading, setProduct]);
+    }, [enqueueSnackbar, product, quantity, setProduct]);
 
     return (
       <Stack
@@ -108,14 +98,18 @@ const IncrementerButton = forwardRef<HTMLDivElement, Props>(
           variant="contained"
           color="primary"
           onClick={() =>
-            quantity > min_order_quantity ? handleDecrease() : handleRemove()
+            quantity > (product?.min_order_quantity || 0)
+              ? handleDecrease()
+              : handleRemove()
           }
           sx={{ p: 1.25, minWidth: "fit-content" }}
           loading={loading}
         >
           <Iconify
             icon={
-              quantity > min_order_quantity ? "eva:minus-fill" : "mage:trash"
+              quantity > (product?.min_order_quantity || 0)
+                ? "eva:minus-fill"
+                : "mage:trash"
             }
           />
         </LoadingButton>
@@ -129,7 +123,7 @@ const IncrementerButton = forwardRef<HTMLDivElement, Props>(
           variant="contained"
           color="primary"
           onClick={() => handleIncrease()}
-          disabled={quantity >= max_order_quantity}
+          disabled={quantity >= (product?.max_order_quantity || 0)}
           sx={{ p: 1.25, minWidth: "fit-content" }}
           loading={loading}
         >
@@ -137,7 +131,7 @@ const IncrementerButton = forwardRef<HTMLDivElement, Props>(
         </LoadingButton>
       </Stack>
     );
-  }
+  },
 );
 
 export default IncrementerButton;

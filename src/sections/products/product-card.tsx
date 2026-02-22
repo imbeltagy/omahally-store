@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useState, useCallback } from "react";
 
+import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
   Card,
@@ -20,11 +22,15 @@ import { RouterLink } from "@/routes/components";
 import { useCurrency } from "@/utils/format-number";
 
 import { useCartStore } from "@/contexts/cart-store";
+import { addProductToCart } from "@/actions/cart-actions";
 
 import Label from "@/components/label";
 import Iconify from "@/components/iconify";
+import { useSnackbar } from "@/components/snackbar";
 
 import { Offer, Product } from "@/types/products";
+
+import IncrementerButton from "./incrementer-button";
 
 interface Props {
   product: Product | Offer;
@@ -51,9 +57,13 @@ export function ProductCard({
   ...cardProps
 }: Props & CardProps) {
   const t = useTranslations("Pages.Home.Product");
-  const products = useCartStore((state) => state.products);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _isProductInCart = !!products.find(
+  const { setProduct } = useCartStore();
+  const { enqueueSnackbar } = useSnackbar();
+  const [adding, setAdding] = useState(false);
+
+  const { products } = useCartStore();
+
+  const cartProduct = products.find(
     (item) => item.product_id === product.product_id,
   );
 
@@ -63,12 +73,80 @@ export function ProductCard({
 
   const currency = useCurrency();
 
+  const handleAddToCart = useCallback(
+    async (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!product.is_quantity_available || adding) return;
+      setAdding(true);
+      try {
+        const res = await addProductToCart({
+          product_category_price_id: product.product_category_price_id,
+          options: [],
+          quantity: product.min_order_quantity,
+        });
+        if ("error" in res) {
+          enqueueSnackbar(res.error ?? "Failed to add product to cart", {
+            variant: "error",
+          });
+          return;
+        }
+        setProduct(res);
+        enqueueSnackbar("Product added to cart", { variant: "success" });
+      } catch {
+        enqueueSnackbar("Failed to add product to cart", { variant: "error" });
+      } finally {
+        setAdding(false);
+      }
+    },
+    [product, adding, setProduct, enqueueSnackbar],
+  );
+
+  const renderButton = () => {
+    if (!product.direct_add)
+      return (
+        <Button
+          component={RouterLink}
+          href={href}
+          variant="contained"
+          color="primary"
+          fullWidth
+          disabled={!product.is_quantity_available}
+          startIcon={<Iconify icon="bxs:cart-alt" />}
+          sx={{ mt: 1 }}
+        >
+          {t("add_to_cart")}
+        </Button>
+      );
+
+    if (!cartProduct)
+      return (
+        <LoadingButton
+          type="button"
+          variant="contained"
+          color="primary"
+          fullWidth
+          disabled={!product.is_quantity_available || adding}
+          startIcon={<Iconify icon="bxs:cart-alt" />}
+          sx={{ mt: 1 }}
+          onClick={handleAddToCart}
+          loading={adding}
+        >
+          {t("add_to_cart")}
+        </LoadingButton>
+      );
+
+    return (
+      <IncrementerButton
+        cartProductId={cartProduct.id}
+        is_quantity_available={product.is_quantity_available}
+        sx={{ width: "100%" }}
+      />
+    );
+  };
+
   return (
-    <StyledCard
-      {...cardProps}
-      className={cardProps.className}
-      // className={`${cardProps.className || ""} ${isProductInCart ? "selected" : ""}`}
-    >
+    <StyledCard {...cardProps} className={cardProps.className}>
       <Box
         className="card-clickable-layer"
         aria-hidden
@@ -108,6 +186,23 @@ export function ProductCard({
         </Label>
       )}
 
+      {cartProduct && (
+        <Label
+          color="primary"
+          sx={{
+            position: "absolute",
+            top: 6,
+            insetInlineEnd: 6,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 0.5,
+          }}
+        >
+          <Iconify icon="bxs:cart-alt" width={14} />
+          {t("in_cart")}
+        </Label>
+      )}
+
       <CardContent
         spacing={0.5}
         flexGrow={1}
@@ -128,18 +223,7 @@ export function ProductCard({
           {currency(finalPrice)}
         </Typography>
 
-        <Button
-          component={RouterLink}
-          href={href}
-          variant="contained"
-          color="primary"
-          fullWidth
-          disabled={!product.is_quantity_available}
-          startIcon={<Iconify icon="bxs:cart-alt" />}
-          sx={{ mt: 1 }}
-        >
-          {t("add_to_cart")}
-        </Button>
+        {renderButton()}
       </CardContent>
     </StyledCard>
   );
