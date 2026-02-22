@@ -135,6 +135,7 @@
       "Product": {
         "add_to_cart": "أضف إلى السلة",
         "in_cart": "في السلة",
+        "sold_out": "نفذ",
         "description": "الوصف",
         "components": "المكونات",
         "no_available": "غير متوفر",

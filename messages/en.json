@@ -135,6 +135,7 @@
       "Product": {
         "add_to_cart": "Add to cart",
         "in_cart": "In cart",
+        "sold_out": "Sold out",
         "description": "Description",
         "components": "Components",
         "no_available": "Not available",

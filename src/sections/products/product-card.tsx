@@ -102,7 +102,7 @@ export function ProductCard({
     [product, adding, setProduct, enqueueSnackbar],
   );
 
-  const renderButton = () => {
+  const renderRowControl = () => {
     if (!product.direct_add)
       return (
         <Button
@@ -110,12 +110,16 @@ export function ProductCard({
           href={href}
           variant="contained"
           color="primary"
-          fullWidth
+          size="small"
           disabled={!product.is_quantity_available}
-          startIcon={<Iconify icon="bxs:cart-alt" />}
-          sx={{ mt: 1 }}
+          sx={{ p: 1, minWidth: "fit-content" }}
+          onClick={(e) => e.stopPropagation()}
         >
-          {t("add_to_cart")}
+          {product.is_quantity_available ? (
+            <Iconify icon="mingcute:add-line" width={20} />
+          ) : (
+            t("sold_out")
+          )}
         </Button>
       );
 
@@ -125,14 +129,17 @@ export function ProductCard({
           type="button"
           variant="contained"
           color="primary"
-          fullWidth
+          size="small"
           disabled={!product.is_quantity_available || adding}
-          startIcon={<Iconify icon="bxs:cart-alt" />}
-          sx={{ mt: 1 }}
+          sx={{ p: 1, minWidth: "fit-content" }}
           onClick={handleAddToCart}
           loading={adding}
         >
-          {t("add_to_cart")}
+          {product.is_quantity_available ? (
+            <Iconify icon="mingcute:add-line" width={20} />
+          ) : (
+            t("sold_out")
+          )}
         </LoadingButton>
       );
 
@@ -140,7 +147,7 @@ export function ProductCard({
       <IncrementerButton
         cartProductId={cartProduct.id}
         is_quantity_available={product.is_quantity_available}
-        sx={{ width: "100%" }}
+        orientation="vertical"
       />
     );
   };
@@ -204,26 +211,60 @@ export function ProductCard({
       )}
 
       <CardContent
+        component={Stack}
         spacing={0.5}
         flexGrow={1}
-        component={Stack}
-        sx={{ p: ".5rem !important", paddingBottom: ".6rem !important" }}
+        sx={{
+          p: ".5rem !important",
+          paddingBottom: ".6rem !important",
+          justifyContent: "flex-end",
+        }}
       >
-        <Typography variant="body1" fontWeight={600} component="p">
-          {product.product_name}
-        </Typography>
-        {/* <Typography variant="caption">{product.measurement_unit}</Typography> */}
-        <Box flexGrow={1} aria-hidden />
-        <Typography fontWeight={600} color="primary" suppressHydrationWarning>
-          {offerPrice && (
-            <Typography component="del" color="text.disabled">
-              {currency(originalPrice, false)}
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          gap={1}
+          sx={{ minWidth: 0 }}
+        >
+          <Box>
+            <Typography
+              variant="body1"
+              fontWeight={600}
+              component="p"
+              noWrap
+              sx={{ flex: "1 1 auto", minWidth: 0 }}
+            >
+              {product.product_name}
             </Typography>
-          )}{" "}
-          {currency(finalPrice)}
-        </Typography>
-
-        {renderButton()}
+            <Typography
+              fontWeight={600}
+              color="primary"
+              suppressHydrationWarning
+              sx={{ flex: "0 0 auto" }}
+            >
+              {offerPrice && (
+                <Typography component="del" color="text.disabled">
+                  {currency(originalPrice, false)}
+                </Typography>
+              )}{" "}
+              {currency(finalPrice)}
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              position: "relative",
+              zIndex: 1,
+              flex: "0 0 auto",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {renderRowControl()}
+          </Box>
+        </Stack>
       </CardContent>
     </StyledCard>
   );

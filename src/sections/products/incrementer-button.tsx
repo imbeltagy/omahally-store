@@ -16,11 +16,20 @@ interface Props extends StackProps {
   cartProductId: string;
   is_quantity_available: boolean;
   addButtonProps?: ButtonProps;
+  /** Vertical layout (e.g. for product card). Default horizontal for single product / cart. */
+  orientation?: "horizontal" | "vertical";
 }
 
 const IncrementerButton = forwardRef<HTMLDivElement, Props>(
   (
-    { cartProductId, is_quantity_available, addButtonProps, sx, ...other },
+    {
+      cartProductId,
+      is_quantity_available,
+      addButtonProps,
+      orientation = "horizontal",
+      sx,
+      ...other
+    },
     ref,
   ) => {
     const { enqueueSnackbar } = useSnackbar();
@@ -77,16 +86,18 @@ const IncrementerButton = forwardRef<HTMLDivElement, Props>(
       })();
     }, [enqueueSnackbar, product, quantity, setProduct]);
 
+    const isVertical = orientation === "vertical";
+
     return (
       <Stack
         ref={ref}
         flexShrink={0}
-        direction="row"
+        direction={isVertical ? "column" : "row"}
         alignItems="center"
         justifyContent="space-between"
         sx={{
           p: 0.5,
-          width: 88,
+          width: isVertical ? 40 : 88,
           borderRadius: 1,
           typography: "subtitle2",
           ...sx,
@@ -114,7 +125,7 @@ const IncrementerButton = forwardRef<HTMLDivElement, Props>(
           />
         </LoadingButton>
 
-        <Box px={1} mx={1}>
+        <Box px={1} pt={0.5} mx={1}>
           {quantity}
         </Box>
 
