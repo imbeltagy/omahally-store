@@ -1,23 +1,15 @@
-import { Box, Container, LinearProgress } from "@mui/material";
+import { Container } from "@mui/material";
+
+import "./styles.css";
 
 export default function OffersLoading() {
   return (
-    <Box py={{ xs: 4, sm: 6 }}>
+    <div className="offers-loading">
       <Container>
-        <Box
-          sx={{
-            px: 5,
-            width: 1,
-            flexGrow: 1,
-            minHeight: "min(10rem, 80vh)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <LinearProgress color="inherit" sx={{ width: 1, maxWidth: 360 }} />
-        </Box>
+        <div className="offers-loading__inner">
+          <div className="skeleton offers-loading__bar" />
+        </div>
       </Container>
-    </Box>
+    </div>
   );
 }

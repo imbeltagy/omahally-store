@@ -1,20 +1,16 @@
-import { Box, Skeleton, Container } from "@mui/material";
+import { Container } from "@mui/material";
+
+import "./styles.css";
 
 export default function BannersLoading() {
   return (
-    <Box
-      sx={{
-        px: 0.5,
-        py: 6,
-      }}
-    >
+    <div className="banners-loading">
       <Container>
-        <Skeleton
-          variant="rounded"
-          width="100%"
-          sx={{ aspectRatio: "1920/500", height: "auto" }}
+        <div
+          className="skeleton skeleton--rounded banners-loading__skeleton"
+          style={{ aspectRatio: "1920/500", width: "100%" }}
         />
       </Container>
-    </Box>
+    </div>
   );
 }

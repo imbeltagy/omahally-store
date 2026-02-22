@@ -1,8 +1,15 @@
+import dynamic from "next/dynamic";
+
 import { fetchCollections } from "@/actions/products-actions";
 
 import { CollectionWithProducts } from "@/types/products";
 
-import CollectionsList from "../collections-list";
+import CollectionsLoading from "../loading/collections-loading";
+
+const CollectionsList = dynamic(() => import("../collections-list"), {
+  ssr: false,
+  loading: () => <CollectionsLoading />,
+});
 
 export default async function CollectionsView({
   filter,
