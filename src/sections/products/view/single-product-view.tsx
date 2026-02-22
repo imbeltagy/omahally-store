@@ -13,9 +13,11 @@ import {
 
 import { useCurrency } from "@/utils/format-number";
 
+import { useCartStore } from "@/contexts/cart-store";
 import { SECTION_PADDING } from "@/layouts/config-layout";
 
 import Label from "@/components/label";
+import Iconify from "@/components/iconify";
 
 import ProductAddForm from "@/sections/products/product-add-form";
 
@@ -33,6 +35,10 @@ export default function SingleProductView({
 }: Props) {
   const t = useTranslations("Pages.Home.Product");
   const currency = useCurrency();
+  const { products } = useCartStore();
+  const isInCart = products.some(
+    (item) => item.product_id === product.product_id,
+  );
 
   const measurement =
     product_measurements.find((item) => item.is_main_unit) ||
@@ -100,6 +106,20 @@ export default function SingleProductView({
         sectionId={product.section_id}
         sx={{ alignSelf: "stretch" }}
       />
+      {isInCart && (
+        <Label
+          color="primary"
+          sx={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 0.5,
+            alignSelf: "center",
+          }}
+        >
+          <Iconify icon="bxs:cart-alt" width={16} />
+          {t("in_cart")}
+        </Label>
+      )}
       {(product.product_option_groups?.length || 0) === 0 ? (
         <ProductAddForm
           product_id={product.product_id}
