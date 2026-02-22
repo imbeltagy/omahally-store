@@ -7,6 +7,7 @@ import { Address } from "./types/profile";
 
 export const {
   NEXT_PUBLIC_HOST_API: HOST_API,
+  NEXT_PUBLIC_TENANT_ID: TENANT_ID,
   HOST_DOMAIN: ASSETS_API,
 } = process.env;
 

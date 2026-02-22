@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 
 import { defaultLocale } from "@/i18n/config-locale";
-import { HOST_API, COOKIES_KEYS } from "@/config-global";
+import { HOST_API, TENANT_ID, COOKIES_KEYS } from "@/config-global";
 
 import {
   ApiResponse,
@@ -45,6 +45,7 @@ async function apiRequest<TResponse, TBody = undefined>(
       Authorization: `Bearer ${token}`,
     }),
     "Accept-Language": lang,
+    "x-tenant-id": TENANT_ID || "",
     ...options.headers,
   };
 
