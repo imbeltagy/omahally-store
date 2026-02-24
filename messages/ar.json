@@ -140,6 +140,8 @@
         "components": "المكونات",
         "no_available": "غير متوفر",
         "options": "خيارات المنتج",
+        "add_to_cart_success": "تمت إضافة المنتج إلى السلة",
+        "add_to_cart_failed": "فشل في إضافة المنتج إلى السلة",
         "Options": {
           "required": "مطلوب",
           "default": "افتراضي",

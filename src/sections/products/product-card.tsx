@@ -86,23 +86,38 @@ export function ProductCard({
           quantity: product.min_order_quantity,
         });
         if ("error" in res) {
-          enqueueSnackbar(res.error ?? "Failed to add product to cart", {
+          enqueueSnackbar(res.error ?? t("add_to_cart_failed"), {
             variant: "error",
           });
           return;
         }
         setProduct(res);
-        enqueueSnackbar("Product added to cart", { variant: "success" });
       } catch {
-        enqueueSnackbar("Failed to add product to cart", { variant: "error" });
+        enqueueSnackbar(t("add_to_cart_failed"), { variant: "error" });
       } finally {
         setAdding(false);
       }
     },
-    [product, adding, setProduct, enqueueSnackbar],
+    [product, adding, setProduct, enqueueSnackbar, t],
   );
 
   const renderRowControl = () => {
+    if (!product.is_quantity_available)
+      return (
+        <Button
+          component={RouterLink}
+          href={href}
+          variant="contained"
+          color="primary"
+          size="small"
+          disabled
+          sx={{ p: 1, minWidth: "fit-content" }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {t("sold_out")}
+        </Button>
+      );
+
     if (!product.direct_add)
       return (
         <Button
@@ -111,15 +126,14 @@ export function ProductCard({
           variant="contained"
           color="primary"
           size="small"
-          disabled={!product.is_quantity_available}
           sx={{ p: 1, minWidth: "fit-content" }}
           onClick={(e) => e.stopPropagation()}
         >
-          {product.is_quantity_available ? (
-            <Iconify icon="mingcute:add-line" width={20} />
-          ) : (
-            t("sold_out")
-          )}
+          <Iconify
+            icon="mingcute:right-line"
+            width={20}
+            sx={{ "[dir=rtl] &": { transform: "rotate(180deg)" } }}
+          />
         </Button>
       );
 
@@ -130,16 +144,11 @@ export function ProductCard({
           variant="contained"
           color="primary"
           size="small"
-          disabled={!product.is_quantity_available || adding}
           sx={{ p: 1, minWidth: "fit-content" }}
           onClick={handleAddToCart}
           loading={adding}
         >
-          {product.is_quantity_available ? (
-            <Iconify icon="mingcute:add-line" width={20} />
-          ) : (
-            t("sold_out")
-          )}
+          <Iconify icon="mingcute:add-line" width={20} />
         </LoadingButton>
       );
 
@@ -194,8 +203,12 @@ export function ProductCard({
       )}
 
       {cartProduct && (
-        <Label
+        <Button
+          component={RouterLink}
+          href="/cart"
+          variant="soft"
           color="primary"
+          size="small"
           sx={{
             position: "absolute",
             top: 6,
@@ -203,11 +216,13 @@ export function ProductCard({
             display: "inline-flex",
             alignItems: "center",
             gap: 0.5,
+            zIndex: 1,
           }}
+          onClick={(e) => e.stopPropagation()}
         >
           <Iconify icon="bxs:cart-alt" width={14} />
           {t("in_cart")}
-        </Label>
+        </Button>
       )}
 
       <CardContent

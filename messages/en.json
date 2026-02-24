@@ -140,6 +140,8 @@
         "components": "Components",
         "no_available": "Not available",
         "options": "Product Options",
+        "add_to_cart_success": "Product added to cart",
+        "add_to_cart_failed": "Failed to add product to cart",
         "Options": {
           "required": "required",
           "default": "Default",
