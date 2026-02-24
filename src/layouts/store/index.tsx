@@ -12,13 +12,14 @@ import HeaderSimple from "../common/header-simple";
 
 type Props = {
   children: React.ReactNode;
+  logo?: string;
 };
 
-export default async function StoreLayout({ children }: Props) {
+export default async function StoreLayout({ children, logo }: Props) {
   return (
     <>
       <HeaderSimple />
-      <StoreHeader />
+      <StoreHeader logo={logo} />
       <Box
         sx={{
           display: "grid",

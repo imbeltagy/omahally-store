@@ -21,7 +21,11 @@ import AccountPopover from "../common/account-popover";
 
 // ----------------------------------------------------------------------
 
-export default function StoreHeader() {
+interface Props {
+  logo?: string;
+}
+
+export default function StoreHeader({ logo }: Props) {
   const theme = useTheme();
 
   const offsetTop = useOffSetTop(HEADER.H_OFFSET);
@@ -32,7 +36,7 @@ export default function StoreHeader() {
 
   const renderContent = (
     <>
-      <Logo sx={{ marginInlineStart: 0.5, marginInlineEnd: 1 }} />
+      <Logo image={logo} sx={{ marginInlineStart: 0.5, marginInlineEnd: 1 }} />
 
       {isSm ? (
         <Button

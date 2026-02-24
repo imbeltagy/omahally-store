@@ -1,4 +1,5 @@
 import StoreLayout from "@/layouts/store";
+import { getAppTheme } from "@/actions/theme";
 
 export default async function Layout({
   children,
@@ -9,8 +10,14 @@ export default async function Layout({
   initcart: React.ReactNode;
   noguest: React.ReactNode;
 }) {
+  let logo: string | undefined;
+  const theme = await getAppTheme();
+  if (!("error" in theme)) {
+    logo = theme.data?.logo;
+  }
+
   return (
-    <StoreLayout>
+    <StoreLayout logo={logo}>
       {children}
       {initcart}
       {noguest}

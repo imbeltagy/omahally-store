@@ -8,9 +8,10 @@ import CompactLayout from "../compact";
 
 type Props = {
   children: React.ReactNode;
+  logo?: string;
 };
 
-export default function AuthModernCompactLayout({ children }: Props) {
+export default function AuthModernCompactLayout({ children, logo }: Props) {
   return (
     <CompactLayout>
       <Box
@@ -30,7 +31,7 @@ export default function AuthModernCompactLayout({ children }: Props) {
           }}
         >
           <Box textAlign="center" mb={3}>
-            <Logo sx={{ width: 70, height: 70 }} />
+            <Logo image={logo} sx={{ width: 70, height: 70 }} />
           </Box>
           {children}
         </Box>

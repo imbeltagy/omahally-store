@@ -1,29 +1,37 @@
 import { forwardRef } from "react";
+import RouterLink from "next/link";
 
 import Link from "@mui/material/Link";
 import Box, { BoxProps } from "@mui/material/Box";
 
 import { paths } from "@/routes/paths";
-import { RouterLink } from "@/routes/components";
 
 // ----------------------------------------------------------------------
 
 export interface LogoProps extends BoxProps {
   disabledLink?: boolean;
+  image?: string;
 }
 
 const Logo = forwardRef<HTMLDivElement, LogoProps>(
-  ({ disabledLink = false, sx, ...other }, ref) => {
+  ({ disabledLink = false, sx, image, ...other }, ref) => {
     // OR using local (public folder)
     // -------------------------------------------------------
-    const logo = (
+    const logo = image ? (
       <Box
         component="img"
-        src="/logo/logo_single.svg"
+        src={image}
         sx={{
           width: { xs: 35, sm: 50 },
           height: { xs: 35, sm: 50 },
-          cursor: "pointer",
+          ...sx,
+        }}
+      />
+    ) : (
+      <Box
+        sx={{
+          width: { xs: 35, sm: 50 },
+          height: { xs: 35, sm: 50 },
           ...sx,
         }}
       />
@@ -37,12 +45,12 @@ const Logo = forwardRef<HTMLDivElement, LogoProps>(
       <Link
         component={RouterLink}
         href={paths.home}
-        sx={{ display: "contents" }}
+        sx={{ display: "contents", cursor: "pointer" }}
       >
         {logo}
       </Link>
     );
-  }
+  },
 );
 
 export default Logo;
