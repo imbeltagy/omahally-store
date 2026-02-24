@@ -113,7 +113,12 @@ const IncrementerButton = forwardRef<HTMLDivElement, Props>(
               ? handleDecrease()
               : handleRemove()
           }
-          sx={{ p: 1.25, minWidth: "fit-content" }}
+          sx={{
+            p: 0,
+            minWidth: "30px",
+            height: "30px",
+            aspectRation: "1",
+          }}
           loading={loading}
         >
           <Iconify
@@ -122,6 +127,7 @@ const IncrementerButton = forwardRef<HTMLDivElement, Props>(
                 ? "eva:minus-fill"
                 : "mage:trash"
             }
+            width={20}
           />
         </LoadingButton>
 
@@ -135,10 +141,15 @@ const IncrementerButton = forwardRef<HTMLDivElement, Props>(
           color="primary"
           onClick={() => handleIncrease()}
           disabled={quantity >= (product?.max_order_quantity || 0)}
-          sx={{ p: 1.25, minWidth: "fit-content" }}
+          sx={{
+            p: 0,
+            minWidth: "30px",
+            height: "30px",
+            aspectRation: "1",
+          }}
           loading={loading}
         >
-          <Iconify icon="mingcute:add-line" />
+          <Iconify icon="mingcute:add-line" width={20} />
         </LoadingButton>
       </Stack>
     );

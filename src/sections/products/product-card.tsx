@@ -70,6 +70,12 @@ export function ProductCard({
   const offerPrice = product.offer_price;
   const originalPrice = product.product_price;
   const finalPrice = offerPrice ?? originalPrice;
+  const offerPercentage = offerPrice
+    ? Math.round(
+        ((Number(originalPrice) - Number(offerPrice)) / Number(originalPrice)) *
+          100,
+      )
+    : 0;
 
   const currency = useCurrency();
 
@@ -111,7 +117,13 @@ export function ProductCard({
           color="primary"
           size="small"
           disabled
-          sx={{ p: 1, minWidth: "fit-content" }}
+          sx={{
+            p: 1,
+            minWidth: "fit-content",
+            height: "auto",
+            aspectRatio: "1/1",
+            borderRadius: "50%",
+          }}
           onClick={(e) => e.stopPropagation()}
         >
           {t("sold_out")}
@@ -126,7 +138,12 @@ export function ProductCard({
           variant="contained"
           color="primary"
           size="small"
-          sx={{ p: 1, minWidth: "fit-content" }}
+          sx={{
+            padding: 0,
+            minWidth: "30px",
+            height: "auto",
+            aspectRatio: "1/1",
+          }}
           onClick={(e) => e.stopPropagation()}
         >
           <Iconify
@@ -144,7 +161,12 @@ export function ProductCard({
           variant="contained"
           color="primary"
           size="small"
-          sx={{ p: 1, minWidth: "fit-content" }}
+          sx={{
+            padding: 0,
+            minWidth: "30px",
+            height: "auto",
+            aspectRatio: "1/1",
+          }}
           onClick={handleAddToCart}
           loading={adding}
         >
@@ -175,55 +197,71 @@ export function ProductCard({
         scroll={false}
         component={Link}
       />
-
-      <CardMedia
-        src={product.product_logo}
-        alt={product.product_name}
-        sx={{
-          height: "auto",
-          aspectRatio: "4/5",
-          objectFit: "contain",
-          cursor: "pointer",
-          marginTop: 1.5,
-        }}
-        component="img"
-      />
-
-      {!product.is_quantity_available && (
-        <Label
-          color="error"
+      <Box position="relative">
+        <CardMedia
+          src={product.product_logo}
+          alt={product.product_name}
           sx={{
-            position: "absolute",
-            top: 6,
-            insetInlineStart: 6,
+            height: "auto",
+            aspectRatio: "4/5",
+            objectFit: "contain",
+            cursor: "pointer",
+            position: "relative",
+            marginTop: 1.5,
           }}
-        >
-          {t("no_available")}
-        </Label>
-      )}
+          component="img"
+        />
 
-      {cartProduct && (
-        <Button
-          component={RouterLink}
-          href="/cart"
-          variant="soft"
-          color="primary"
-          size="small"
-          sx={{
-            position: "absolute",
-            top: 6,
-            insetInlineEnd: 6,
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 0.5,
-            zIndex: 1,
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Iconify icon="bxs:cart-alt" width={14} />
-          {t("in_cart")}
-        </Button>
-      )}
+        {!product.is_quantity_available && (
+          <Label
+            color="error"
+            sx={{
+              position: "absolute",
+              top: 6,
+              insetInlineStart: 6,
+            }}
+          >
+            {t("no_available")}
+          </Label>
+        )}
+
+        {product.is_quantity_available && offerPrice && offerPercentage > 0 && (
+          <Label
+            color="error"
+            sx={{
+              position: "absolute",
+              bottom: 6,
+              insetInlineStart: 6,
+            }}
+            variant="filled"
+          >
+            -{offerPercentage}%
+          </Label>
+        )}
+
+        {cartProduct && (
+          <Button
+            component={RouterLink}
+            href="/cart"
+            variant="soft"
+            color="primary"
+            size="small"
+            sx={{
+              position: "absolute",
+              top: 6,
+              insetInlineEnd: 6,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 0.5,
+              zIndex: 1,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Iconify icon="bxs:cart-alt" width={14} />
+            {t("in_cart")}
+          </Button>
+        )}
+      </Box>
 
       <CardContent
         component={Stack}
@@ -232,7 +270,7 @@ export function ProductCard({
         sx={{
           p: ".5rem !important",
           paddingBottom: ".6rem !important",
-          justifyContent: "flex-end",
+          display: "block",
         }}
       >
         <Stack
@@ -240,14 +278,17 @@ export function ProductCard({
           alignItems="center"
           justifyContent="space-between"
           gap={1}
-          sx={{ minWidth: 0 }}
+          sx={{ minWidth: 0, minHeight: 0, height: "100%" }}
         >
-          <Box>
+          <Stack
+            sx={{
+              alignSelf: "stretch",
+            }}
+          >
             <Typography
               variant="body1"
               fontWeight={600}
               component="p"
-              noWrap
               sx={{ flex: "1 1 auto", minWidth: 0 }}
             >
               {product.product_name}
@@ -263,9 +304,11 @@ export function ProductCard({
                   {currency(originalPrice, false)}
                 </Typography>
               )}{" "}
-              {currency(finalPrice)}
+              <span style={{ whiteSpace: "nowrap" }}>
+                {currency(finalPrice)}
+              </span>
             </Typography>
-          </Box>
+          </Stack>
           <Box
             sx={{
               position: "relative",
