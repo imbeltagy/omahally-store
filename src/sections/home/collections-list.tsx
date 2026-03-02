@@ -159,7 +159,7 @@ function CollectionRow({
             >
               <Iconify
                 width={20}
-                sx={{ "[dir='ltr'] &": { transform: "scaleX(1)" } }}
+                sx={{ "[dir='ltr'] &": { transform: "scaleX(-1)" } }}
                 icon="weui:arrow-filled"
               />
             </StyledButton>
@@ -169,7 +169,7 @@ function CollectionRow({
             >
               <Iconify
                 width={20}
-                sx={{ "[dir='rtl'] &": { transform: "scaleX(1)" } }}
+                sx={{ "[dir='rtl'] &": { transform: "scaleX(-1)" } }}
                 icon="weui:arrow-filled"
               />
             </StyledButton>
