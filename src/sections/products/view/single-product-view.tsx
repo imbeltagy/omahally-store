@@ -9,7 +9,10 @@ import {
   Container,
   Typography,
   CardContent,
+  Button,
 } from "@mui/material";
+
+import { RouterLink } from "@/routes/components";
 
 import { useCurrency } from "@/utils/format-number";
 
@@ -106,20 +109,20 @@ export default function SingleProductView({
         sectionId={product.section_id}
         sx={{ alignSelf: "stretch" }}
       />
+
       {isInCart && (
-        <Label
+        <Button
+          component={RouterLink}
+          href="/cart"
+          variant="soft"
           color="primary"
-          sx={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 0.5,
-            alignSelf: "center",
-          }}
+          onClick={(e) => e.stopPropagation()}
         >
-          <Iconify icon="bxs:cart-alt" width={16} />
+          <Iconify icon="bxs:cart-alt" width={14} />
           {t("in_cart")}
-        </Label>
+        </Button>
       )}
+
       {(product.product_option_groups?.length || 0) === 0 ? (
         <ProductAddForm
           product_id={product.product_id}
