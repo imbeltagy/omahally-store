@@ -38,6 +38,10 @@ const IncrementerButton = forwardRef<HTMLDivElement, Props>(
 
     const product = products.find((item) => item.id === cartProductId);
     const quantity = product?.quantity || 0;
+    const maxQuantity = Math.min(
+      product?.warehouse_quantity || 0,
+      product?.max_order_quantity || 0,
+    );
 
     const handleRemove = useCallback(() => {
       if (!product) return;
@@ -140,7 +144,7 @@ const IncrementerButton = forwardRef<HTMLDivElement, Props>(
           variant="contained"
           color="primary"
           onClick={() => handleIncrease()}
-          disabled={quantity >= (product?.max_order_quantity || 0)}
+          disabled={quantity >= maxQuantity}
           sx={{
             p: 0,
             minWidth: "30px",

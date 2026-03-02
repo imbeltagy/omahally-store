@@ -26,10 +26,6 @@ export default function CartItem({ product }: { product: CartProduct }) {
   const t = useTranslations("Pages.Orders.Single.Shipment");
   const tCart = useTranslations("Pages.Cart");
   const currency = useCurrency();
-  const maxQuantity = Math.min(
-    product.warehouse_quantity,
-    product.max_order_quantity
-  );
 
   const renderTopRow = (
     <Stack direction="row" alignItems="center" spacing={2}>
@@ -142,8 +138,6 @@ export default function CartItem({ product }: { product: CartProduct }) {
 
         <IncrementerButton
           cartProductId={product.id}
-          min_order_quantity={product.min_order_quantity}
-          max_order_quantity={maxQuantity}
           sx={{ flexShrink: 0, width: "fit-content" }}
           is_quantity_available
         />
