@@ -21,7 +21,9 @@ import { RouterLink } from "@/routes/components";
 
 import { useCurrency } from "@/utils/format-number";
 
+import { useAuthContext } from "@/auth/hooks";
 import { useCartStore } from "@/contexts/cart-store";
+import { useNoGuestStore } from "@/contexts/no-guest";
 import { addProductToCart } from "@/actions/cart-actions";
 
 import Label from "@/components/label";
@@ -57,6 +59,8 @@ export function ProductCard({
   ...cardProps
 }: Props & CardProps) {
   const t = useTranslations("Pages.Home.Product");
+  const { authenticated } = useAuthContext();
+  const { setOpen } = useNoGuestStore();
   const { setProduct } = useCartStore();
   const { enqueueSnackbar } = useSnackbar();
   const [adding, setAdding] = useState(false);
@@ -81,6 +85,11 @@ export function ProductCard({
 
   const handleAddToCart = useCallback(
     async (e: React.MouseEvent) => {
+      if (!authenticated) {
+        setOpen(true);
+        return;
+      }
+
       e.preventDefault();
       e.stopPropagation();
       if (!product.is_quantity_available || adding) return;
@@ -104,7 +113,17 @@ export function ProductCard({
         setAdding(false);
       }
     },
-    [product, adding, setProduct, enqueueSnackbar, t],
+    [
+      authenticated,
+      product.is_quantity_available,
+      product.product_category_price_id,
+      product.min_order_quantity,
+      adding,
+      setOpen,
+      setProduct,
+      enqueueSnackbar,
+      t,
+    ],
   );
 
   const renderRowControl = () => {
@@ -130,7 +149,7 @@ export function ProductCard({
         </Button>
       );
 
-    if (!product.direct_add)
+    if (!product.direct_add && authenticated)
       return (
         <Button
           component={RouterLink}
