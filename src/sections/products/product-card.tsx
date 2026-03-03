@@ -280,6 +280,7 @@ export function ProductCard({
               gap: 0.5,
               zIndex: 1,
             }}
+            className="non-clickable-layer"
             onClick={(e) => e.stopPropagation()}
           >
             <Iconify icon="bxs:cart-alt" width={14} />
