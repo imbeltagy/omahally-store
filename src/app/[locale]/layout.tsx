@@ -3,11 +3,14 @@ import {
   getMessages,
   getTranslations,
   unstable_setRequestLocale,
-} from "next-intl/server";
+} from "next-intl/server"; // eslint-disable-line import/no-extraneous-dependencies
+import { Theme } from "@mui/material";
 
 import ThemeProvider from "@/theme";
+import { getAppTheme } from "@/actions/theme";
 import { primaryFont } from "@/theme/typography";
 import { AuthProvider } from "@/auth/context/jwt";
+import { generatePalette } from "@/theme/generate-palette";
 import LocalizationProvider from "@/i18n/localization-provider";
 import { locales, LocaleType, localesSettings } from "@/i18n/config-locale";
 
@@ -29,6 +32,18 @@ export default async function LocaleLayout({
 
   const { dir } = localesSettings[locale];
 
+  const theme: DeepPartial<Theme> = { palette: { primary: {}, secondary: {} } };
+  const appTheme = await getAppTheme();
+  if (!("error" in appTheme)) {
+    const primaryMain = appTheme.data?.primary_color;
+    const secondaryMain = appTheme.data?.secondary_color;
+
+    if (primaryMain) theme.palette!.primary = generatePalette(primaryMain);
+
+    if (secondaryMain)
+      theme.palette!.secondary = generatePalette(secondaryMain);
+  }
+
   return (
     <html lang={locale} dir={dir} className={primaryFont.className}>
       <body>
@@ -45,7 +60,7 @@ export default async function LocaleLayout({
                   themeStretch: false,
                 }}
               >
-                <ThemeProvider>
+                <ThemeProvider theme={theme}>
                   <SnackbarProvider>
                     <MotionLazy>
                       <SettingsDrawer />

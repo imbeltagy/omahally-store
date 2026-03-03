@@ -65,7 +65,7 @@ export default function SectionHeadding({
           sx={{
             width: "10%",
             height: "100%",
-            bgcolor: "#FFD23F",
+            bgcolor: "secondary.light",
           }}
         />
         <Box
