@@ -319,7 +319,7 @@ export function ProductCard({
             </Typography>
             <Typography
               fontWeight={600}
-              color={offerPrice ? "error" : "primary"}
+              color={offerPrice ? "error" : "text.primary"}
               suppressHydrationWarning
               sx={{ flex: "0 0 auto" }}
             >
