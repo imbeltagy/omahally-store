@@ -6,7 +6,6 @@ import StoreHeader from "./header";
 import Footer from "../common/footer";
 import { HEADER } from "../config-layout";
 import Copyrights from "../common/copyrights";
-import HeaderSimple from "../common/header-simple";
 
 // ----------------------------------------------------------------------
 
@@ -18,14 +17,13 @@ type Props = {
 export default async function StoreLayout({ children, logo }: Props) {
   return (
     <>
-      <HeaderSimple />
       <StoreHeader logo={logo} />
       <Box
         sx={{
           display: "grid",
           gridTemplateRows: "1fr auto",
           gridTemplateColumns: "100%",
-          pt: `${HEADER.H_SIMPLE + HEADER.H_MOBILE}px`,
+          pt: `${HEADER.H_MOBILE}px`,
           minHeight: "100%",
           overflow: "hidden",
           width: "100%",

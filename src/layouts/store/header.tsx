@@ -18,6 +18,7 @@ import StoreSearch from "./search";
 import CartButton from "./cart-button";
 import { HEADER } from "../config-layout";
 import AccountPopover from "../common/account-popover";
+import LanguagePopover from "../common/language-popover";
 
 // ----------------------------------------------------------------------
 
@@ -41,15 +42,17 @@ export default function StoreHeader({ logo }: Props) {
       {isSm ? (
         <Button
           onClick={openXsScreenSearch.onToggle}
-          variant="contained"
           size="small"
           sx={{
             minWidth: 0,
-            borderRadius: "100%",
-            aspectRatio: 1,
+            width: 44,
+            height: 44,
+            borderRadius: 2.5,
             flexShrink: 0,
-            padding: "5px",
             marginInlineEnd: 1,
+            border: "1px solid",
+            borderColor: "divider",
+            color: "text.primary",
           }}
         >
           <Iconify
@@ -58,7 +61,7 @@ export default function StoreHeader({ logo }: Props) {
                 ? "eva:close-outline"
                 : "material-symbols:search"
             }
-            width={{ xs: 20, sm: 24 }}
+            width={22}
           />
         </Button>
       ) : (
@@ -70,12 +73,12 @@ export default function StoreHeader({ logo }: Props) {
         direction="row"
         alignItems="center"
         justifyContent="flex-end"
-        spacing={1}
+        spacing={1.5}
         flexShrink={0}
       >
-        <CartButton />
-
-        <AccountPopover />
+        <LanguagePopover isMobile />
+        <AccountPopover isMobile={isSm} />
+        <CartButton isMobile={isSm} />
       </Stack>
     </>
   );
@@ -83,12 +86,11 @@ export default function StoreHeader({ logo }: Props) {
   return (
     <AppBar
       sx={{
-        top: HEADER.H_SIMPLE,
+        top: 0,
         height: HEADER.H_MOBILE + (isSm && openXsScreenSearch.value ? 60 : 0),
         overflow: "hidden",
-        borderTop: `solid 1px ${theme.palette.divider}`,
-        borderBottom: `solid 1px transparent`,
-        zIndex: theme.zIndex.appBar + 1,
+        borderBottom: `solid 1px ${theme.palette.divider}`,
+        zIndex: theme.zIndex.appBar,
         ...bgBlur({
           color: theme.palette.background.default,
         }),
@@ -96,7 +98,6 @@ export default function StoreHeader({ logo }: Props) {
           duration: theme.transitions.duration.shorter,
         }),
         ...(offsetTop && {
-          top: 0,
           borderColor: theme.palette.divider,
         }),
       }}
@@ -104,7 +105,7 @@ export default function StoreHeader({ logo }: Props) {
       <Container sx={{ minHeight: "100%" }}>
         <Toolbar sx={{ height: HEADER.H_MOBILE }}>{renderContent}</Toolbar>
 
-        {isSm && <StoreSearch />}
+        {isSm && openXsScreenSearch.value && <StoreSearch />}
       </Container>
     </AppBar>
   );

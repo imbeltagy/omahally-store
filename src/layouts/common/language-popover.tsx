@@ -1,10 +1,13 @@
+"use client";
+
 import { m } from "framer-motion";
 import { useCallback } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useSearchParams } from "next/navigation";
 
+import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import { Button, Typography } from "@mui/material";
+import { Button, IconButton, Typography } from "@mui/material";
 
 import { clientRedirect } from "@/actions/client-redirect";
 import { allLocales, LocaleType } from "@/i18n/config-locale";
@@ -16,7 +19,12 @@ import CustomPopover, { usePopover } from "@/components/custom-popover";
 
 // ----------------------------------------------------------------------
 
-export default function LanguagePopover() {
+interface LanguagePopoverProps {
+  isMobile?: boolean;
+}
+
+export default function LanguagePopover({ isMobile }: LanguagePopoverProps) {
+  const t = useTranslations("Global.Label");
   const popover = usePopover();
   const locale = useLocale();
   const currentLocale = useCurrentLocale();
@@ -28,49 +36,87 @@ export default function LanguagePopover() {
     (newLocale: LocaleType) => {
       if (locale !== newLocale) {
         clientRedirect(
-          `${pathname.replace(`/${locale}`, `/${newLocale}`)}${searchParams ? `?${searchParams.toString()}` : ""}`
+          `${pathname.replace(`/${locale}`, `/${newLocale}`)}${searchParams ? `?${searchParams.toString()}` : ""}`,
         );
       }
       popover.onClose();
     },
-    [locale, pathname, popover, searchParams]
+    [locale, pathname, popover, searchParams],
+  );
+
+  const languageLabel = t("language");
+
+  const triggerButton = isMobile ? (
+    <IconButton
+      component={m.button}
+      whileTap="tap"
+      whileHover="hover"
+      variants={varHover(1.05)}
+      onClick={popover.onOpen}
+      sx={{
+        width: 44,
+        height: 44,
+        borderRadius: 2.5,
+        border: "1px solid",
+        borderColor: "divider",
+        color: "text.primary",
+        "&:hover": { bgcolor: "#ebe6de" },
+        ...(popover.open && { bgcolor: "#ebe6de" }),
+      }}
+    >
+      <Iconify icon={currentLocale.icon} width={22} />
+    </IconButton>
+  ) : (
+    <Button
+      component={m.button}
+      whileTap="tap"
+      whileHover="hover"
+      variants={varHover(1.05)}
+      onClick={popover.onOpen}
+      startIcon={
+        <Iconify
+          icon={currentLocale.icon}
+          sx={{ borderRadius: 0.65, width: 20 }}
+        />
+      }
+      endIcon={
+        <Iconify
+          icon="eva:chevron-down-fill"
+          style={{
+            transform: popover.open ? "rotate(180deg)" : "",
+            transition: "0.2s",
+          }}
+        />
+      }
+      sx={{
+        height: 44,
+        borderRadius: 2.5,
+        px: 2,
+        py: 1.25,
+        border: "1px solid",
+        borderColor: "divider",
+        color: "text.primary",
+        fontWeight: 600,
+        "&:hover": {
+          bgcolor: "#ebe6de",
+          borderColor: "divider",
+        },
+        ...(popover.open && { bgcolor: "#ebe6de" }),
+      }}
+    >
+      <Typography variant="body2">{currentLocale.label}</Typography>
+    </Button>
   );
 
   return (
     <>
-      <Button
-        component={m.button}
-        whileTap="tap"
-        whileHover="hover"
-        variants={varHover(1.05)}
-        onClick={popover.onOpen}
-        sx={{
-          // width: 40,
-          height: 40,
-          p: 0,
-          px: 2,
-          ...(popover.open && {
-            bgcolor: "action.selected",
-          }),
-        }}
-        startIcon={
-          <Iconify
-            icon={currentLocale.icon}
-            sx={{ borderRadius: 0.65, width: 20 }}
-          />
-        }
-        endIcon={
-          <Iconify
-            icon="eva:chevron-down-fill"
-            style={{
-              transform: popover.open ? "rotate(180deg)" : "",
-              transition: "0.2s",
-            }}
-          />
-        }
-      >
-        <Typography>{currentLocale.label}</Typography>
-      </Button>
+      {isMobile ? (
+        <Tooltip title={languageLabel} arrow placement="bottom">
+          <span>{triggerButton}</span>
+        </Tooltip>
+      ) : (
+        triggerButton
+      )}
 
       <CustomPopover
         open={popover.open}

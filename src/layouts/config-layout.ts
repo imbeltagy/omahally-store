@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------------
 
 export const HEADER = {
+  /** Used by compact layout (e.g. auth pages) for simple top bar height */
   H_SIMPLE: 50,
   H_MOBILE: 80,
   H_DESKTOP: 80,

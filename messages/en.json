@@ -24,6 +24,8 @@
       "name": "Name",
       "phone": "Phone",
       "login": "Login",
+      "cart": "Cart",
+      "language": "Language",
       "search": "Search Products...",
       "address_description": "Address Description (Nearest Landmark)",
       "is_default_address": "Make default shipping address"

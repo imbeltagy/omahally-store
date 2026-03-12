@@ -8,6 +8,7 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
 import Divider from "@mui/material/Divider";
+import Tooltip from "@mui/material/Tooltip";
 import { alpha } from "@mui/material/styles";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
@@ -60,7 +61,11 @@ let OPTIONS: ({ label: string; icon: string } & (
 
 // ----------------------------------------------------------------------
 
-export default function AccountPopover() {
+interface AccountPopoverProps {
+  isMobile?: boolean;
+}
+
+export default function AccountPopover({ isMobile }: AccountPopoverProps) {
   const t = useTranslations();
   const { authenticated } = useAuthContext();
 
@@ -70,27 +75,61 @@ export default function AccountPopover() {
     setSearchParams(
       new URLSearchParams({
         returnTo: window.location.pathname,
-      }).toString()
+      }).toString(),
     );
   }, []);
 
-  if (authenticated) return <AccountPopoverContent />;
+  if (authenticated) return <AccountPopoverContent isMobile={isMobile} />;
 
   const loginHref = `${paths.auth.jwt.login}?${searchParams}`;
+  const loginLabel = t("Global.Label.login");
+
+  if (isMobile) {
+    return (
+      <Tooltip title={loginLabel} arrow placement="bottom">
+        <IconButton
+          LinkComponent={RouterLink}
+          href={loginHref}
+          sx={{
+            width: 44,
+            height: 44,
+            borderRadius: 2.5,
+            border: "1px solid",
+            borderColor: "divider",
+            color: "text.primary",
+          }}
+        >
+          <Iconify icon="solar:user-bold" width={22} />
+        </IconButton>
+      </Tooltip>
+    );
+  }
 
   return (
     <Button
       variant="outlined"
       LinkComponent={RouterLink}
       href={loginHref}
-      sx={{ flexShrink: 0 }}
+      startIcon={<Iconify icon="solar:user-bold" width={20} />}
+      sx={{
+        flexShrink: 0,
+        borderRadius: 2.5,
+        px: 2,
+        py: 1.25,
+        borderColor: "divider",
+        color: "text.primary",
+        fontWeight: 600,
+        "&:hover": {
+          borderColor: "divider",
+        },
+      }}
     >
-      {t("Global.Label.login")}
+      {loginLabel}
     </Button>
   );
 }
 
-function AccountPopoverContent() {
+function AccountPopoverContent({ isMobile }: { isMobile?: boolean }) {
   const t = useTranslations("Navigation");
   const router = useRouter();
   const popover = usePopover();
@@ -132,36 +171,47 @@ function AccountPopoverContent() {
     } else action();
   };
 
-  return (
-    <>
-      <IconButton
-        component={m.button}
-        whileTap="tap"
-        whileHover="hover"
-        variants={varHover(1.05)}
-        onClick={popover.onOpen}
+  const accountButton = (
+    <IconButton
+      component={m.button}
+      whileTap="tap"
+      whileHover="hover"
+      variants={varHover(1.05)}
+      onClick={popover.onOpen}
+      sx={{
+        width: isMobile ? 44 : 40,
+        height: isMobile ? 44 : 40,
+        borderRadius: 2.5,
+        background: (theme) => alpha(theme.palette.grey[500], 0.08),
+        ...(popover.open && {
+          background: (theme) =>
+            `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
+        }),
+      }}
+    >
+      <Avatar
+        src={user?.avatar}
+        alt={user?.name}
         sx={{
-          width: 40,
-          height: 40,
-          background: (theme) => alpha(theme.palette.grey[500], 0.08),
-          ...(popover.open && {
-            background: (theme) =>
-              `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
-          }),
+          width: 36,
+          height: 36,
+          border: (theme) => `solid 2px ${theme.palette.background.default}`,
         }}
       >
-        <Avatar
-          src={user?.avatar}
-          alt={user?.name}
-          sx={{
-            width: 36,
-            height: 36,
-            border: (theme) => `solid 2px ${theme.palette.background.default}`,
-          }}
-        >
-          {user?.name?.charAt(0).toUpperCase()}
-        </Avatar>
-      </IconButton>
+        {user?.name?.charAt(0).toUpperCase()}
+      </Avatar>
+    </IconButton>
+  );
+
+  return (
+    <>
+      {isMobile ? (
+        <Tooltip title={user?.name || t("home")} arrow placement="bottom">
+          <span>{accountButton}</span>
+        </Tooltip>
+      ) : (
+        accountButton
+      )}
 
       <CustomPopover
         open={popover.open}
@@ -186,7 +236,7 @@ function AccountPopoverContent() {
               key={option.label}
               onClick={() =>
                 handleClickItem(
-                  "linkTo" in option ? option.linkTo : option.onClick
+                  "linkTo" in option ? option.linkTo : option.onClick,
                 )
               }
             >

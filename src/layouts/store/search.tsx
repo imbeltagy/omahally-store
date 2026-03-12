@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 
+import { alpha } from "@mui/material/styles";
 import {
   Popper,
   MenuItem,
@@ -36,7 +37,7 @@ export default function StoreSearch() {
           res?.map((item) => ({
             name: item.product_name,
             id: item.product_id,
-          })) || []
+          })) || [],
         );
       }
     })();
@@ -48,7 +49,7 @@ export default function StoreSearch() {
       if (!value) return;
       router.push(`${paths.products}?search=${value}`, { scroll: false });
     },
-    [router]
+    [router],
   );
 
   return (
@@ -92,10 +93,16 @@ export default function StoreSearch() {
         open: boolean;
         sx?: any;
         [key: string]: any;
-      }) => <Popper {...props} sx={{ ...props.sx, minWidth: "20rem" }} />}
+      }) => (
+        <Popper {...props} sx={{ ...props.sx, minWidth: "20rem", pt: 0.5 }} />
+      )}
       noOptionsText={t("no_products")}
       inputValue=""
-      sx={{ paddingInlineEnd: 1.5 }}
+      sx={{
+        paddingInlineEnd: 1.5,
+        flex: { xs: 1, sm: "1 1 auto" },
+        maxWidth: { sm: 420 },
+      }}
       fullWidth
     />
   );
@@ -112,48 +119,54 @@ function SearchInput({
       {...props}
       sx={{
         mx: 1,
-        borderRadius: "8px",
         "& .MuiFilledInput-root": {
-          borderRadius: "8px",
-          py: "12px !important",
-          px: 1.75,
+          borderRadius: "9999px",
+          minHeight: "32",
+          height: "32",
+          px: 0,
+          paddingInlineStart: 1.5,
+          backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.1),
+          // paddingInlineEnd: 0.25,
         },
-        "& .MuiFilledInput-input": { p: "0 !important" },
+        "& .MuiFilledInput-input": {
+          p: 0,
+          py: "12px",
+          "&::placeholder": {
+            color: (theme) => alpha(theme.palette.primary.main, 0.7),
+            opacity: 1,
+          },
+        },
+        "& .MuiInputBase-root": {
+          p: "8px 10px !important",
+          paddingInlineStart: "2rem !important",
+        },
       }}
       variant="filled"
       placeholder={t("search")}
       fullWidth
       InputProps={{
         ...props?.InputProps,
+        disableUnderline: true,
         sx: {
           ...props?.InputProps?.sx,
-          backgroundColor: "#fff",
-          "&:hover": {
-            backgroundColor: "#efefef",
-          },
+          borderRadius: "9999px",
         },
         endAdornment: (
           <ButtonBase
             onClick={() => onSubmit()}
             sx={{
-              position: "absolute",
-              insetInlineEnd: 0,
-              height: { sm: "100%" },
-              width: "auto",
-              aspectRatio: { xs: 1, sm: "1.2/1" },
-              marginInlineEnd: { xs: 1, sm: 0 },
-              padding: { xs: 1, sm: 0 },
-              bgcolor: "#212B36",
-              color: "white",
-              borderRadius: { xs: "100%", sm: "8px" },
+              width: 36,
+              height: 36,
+              flexShrink: 0,
+              borderRadius: "50%",
+              backgroundColor: "primary.main",
+              color: "primary.contrastText",
               display: "grid",
               placeItems: "center",
+              "&:hover": { bgcolor: "primary.dark" },
             }}
           >
-            <Iconify
-              icon="material-symbols:search"
-              width={{ xs: 20, sm: 24 }}
-            />
+            <Iconify icon="material-symbols:search" width={22} />
           </ButtonBase>
         ),
       }}
