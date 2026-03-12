@@ -29,10 +29,10 @@ export default function SubCategoriesFilter({
           { name: "subCategoryId", value: newValue },
           { name: "page", value: undefined },
         ],
-        true
+        true,
       );
     },
-    [createQueryString]
+    [createQueryString],
   );
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function SubCategoriesFilter({
       {subCategories.map((item, index) => (
         <Button
           variant={item.id === subCategoryId ? "contained" : "outlined"}
-          color={item.id === subCategoryId ? "warning" : "inherit"}
+          color={item.id === subCategoryId ? "secondary" : "inherit"}
           onClick={(e) => handleChange(e, item.id)}
           key={index}
           value={item.id}
