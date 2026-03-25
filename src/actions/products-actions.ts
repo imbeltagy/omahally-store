@@ -37,7 +37,7 @@ export async function fetchCategories() {
 
   const sectionId = sectionRes[0]?.id;
   const categoriesRes = await getData<Category[]>(
-    `${endpoints.products.categories(sectionId)}?all=false`
+    `${endpoints.products.categories(sectionId)}?all=false`,
   );
   if ("error" in categoriesRes) {
     return categoriesRes;
@@ -51,7 +51,7 @@ interface CategoryGroupsResponse {
 }
 export async function fetchCategoryGroups() {
   const categoriesRes = await getData<CategoryGroupsResponse>(
-    endpoints.products.categoryGroups
+    endpoints.products.categoryGroups,
   );
   if ("error" in categoriesRes) {
     return categoriesRes;
@@ -61,7 +61,7 @@ export async function fetchCategoryGroups() {
 
 export async function fetchSubCategories(categoryId: string) {
   const res = await getData<SubCategory[]>(
-    `${endpoints.products.subCategories(categoryId)}?all=false`
+    `${endpoints.products.subCategories(categoryId)}?all=false`,
   );
 
   if ("error" in res) {
@@ -72,7 +72,7 @@ export async function fetchSubCategories(categoryId: string) {
 
 export async function fetchProductsBySubCategory(
   subCategoryId: string,
-  page = 1
+  page = 1,
 ) {
   if (!subCategoryId) throw new Error("subCategoryId is required");
   const favAddress = await getFavAddress();
@@ -87,7 +87,7 @@ export async function fetchProductsBySubCategory(
   });
 
   const res = await getData<{ data: Product[]; meta: { itemCount: number } }>(
-    `${endpoints.products.products}?${searchParams.toString()}`
+    `${endpoints.products.products}?${searchParams.toString()}`,
   );
 
   if ("error" in res) {
@@ -96,7 +96,7 @@ export async function fetchProductsBySubCategory(
   return {
     items: res?.data?.data,
     pagesCount: Math.ceil(
-      (res?.data?.meta?.itemCount || 0) / PRODUCTS_PER_PAGE
+      (res?.data?.meta?.itemCount || 0) / PRODUCTS_PER_PAGE,
     ),
   };
 }
@@ -113,7 +113,7 @@ export async function fetchProductsByBrand(brandId: string, page = 1) {
     latitude: favAddress.latitude,
   });
   const res = await getData<{ data: Product[]; meta: { itemCount: number } }>(
-    `${endpoints.products.products}?${searchParams.toString()}`
+    `${endpoints.products.products}?${searchParams.toString()}`,
   );
 
   if ("error" in res) {
@@ -122,7 +122,7 @@ export async function fetchProductsByBrand(brandId: string, page = 1) {
   return {
     items: res?.data?.data,
     pagesCount: Math.ceil(
-      (res?.data?.meta?.itemCount || 0) / PRODUCTS_PER_PAGE
+      (res?.data?.meta?.itemCount || 0) / PRODUCTS_PER_PAGE,
     ),
   };
 }
@@ -144,7 +144,7 @@ export async function fetchFavoriteProducts(page = 1) {
   });
 
   const res = await getData<{ data: Product[]; meta: { itemCount: number } }>(
-    `${endpoints.products.favoriteList}?${searchParams.toString()}`
+    `${endpoints.products.favoriteList}?${searchParams.toString()}`,
   );
 
   if ("error" in res) {
@@ -153,22 +153,32 @@ export async function fetchFavoriteProducts(page = 1) {
   return {
     items: res?.data?.data,
     pagesCount: Math.ceil(
-      (res?.data?.meta?.itemCount || 0) / PRODUCTS_PER_PAGE
+      (res?.data?.meta?.itemCount || 0) / PRODUCTS_PER_PAGE,
     ),
   };
 }
 
-export async function fetchOffers(page = 1) {
+export async function fetchOffers(page = 1, limit = PRODUCTS_PER_PAGE) {
+  const cookieStore = await cookies();
+  const user = cookieStore.get(COOKIES_KEYS.user)?.value;
+  const userId = user ? JSON.parse(user).id : null;
+
+  const sectionRes = await fetchSections();
+  const sectionId = "error" in sectionRes ? undefined : sectionRes[0]?.id;
   const favAddress = await getFavAddress();
+
   const searchParams = new URLSearchParams({
     page: String(page),
-    limit: String(PRODUCTS_PER_PAGE),
+    limit: String(limit),
     sort: "new",
     longitude: favAddress.longitude,
     latitude: favAddress.latitude,
+    section_id: sectionId || "",
+    user_id: userId || "",
   });
+
   const res = await getData<{ data: Offer[]; meta: { itemCount: number } }>(
-    `${endpoints.products.offers}?${searchParams.toString()}`
+    `${endpoints.products.offers}?${searchParams.toString()}`,
   );
 
   if ("error" in res) {
@@ -177,18 +187,18 @@ export async function fetchOffers(page = 1) {
   return {
     items: res?.data?.data,
     pagesCount: Math.ceil(
-      (res?.data?.meta?.itemCount || 0) / PRODUCTS_PER_PAGE
+      (res?.data?.meta?.itemCount || 0) / PRODUCTS_PER_PAGE,
     ),
   };
 }
 
 export async function fetchCollections() {
   const searchParams = new URLSearchParams({
-    page: '1',
-    limit: "1"
+    page: "1",
+    limit: "1",
   });
   const res = await getData<{ collections: CollectionWithProducts[] }>(
-    `${endpoints.products.collections}?${searchParams.toString()}`
+    `${endpoints.products.collections}?${searchParams.toString()}`,
   );
 
   if ("error" in res) {
@@ -201,7 +211,7 @@ export async function fetchCollections() {
 export async function fetchProductsByCollection(
   collectionId: string,
   page = 1,
-  limit = 50
+  limit = 50,
 ) {
   if (!collectionId) throw new Error("collectionId is required");
   const favAddress = await getFavAddress();
@@ -216,7 +226,7 @@ export async function fetchProductsByCollection(
   });
 
   const res = await getData<{ data: Product[]; meta: { itemCount: number } }>(
-    `${endpoints.products.products}?${searchParams.toString()}`
+    `${endpoints.products.products}?${searchParams.toString()}`,
   );
 
   if ("error" in res) {
@@ -234,7 +244,7 @@ export async function fetchSingleProduct(productId: string) {
   const favAddress = await getFavAddress();
 
   const res = await getData<FullProduct>(
-    `${endpoints.products.singleProduct}/${productId}?user_id=${user.id || ""}&latitude=${favAddress.latitude}&longitude=${favAddress.longitude}`
+    `${endpoints.products.singleProduct}/${productId}?user_id=${user.id || ""}&latitude=${favAddress.latitude}&longitude=${favAddress.longitude}`,
   );
   if ("error" in res) {
     if (res.status === 404) {
@@ -264,7 +274,7 @@ export async function searchProducts(search: string) {
     latitude: favAddress.latitude,
   });
   const res = await getData<{ data: Product[]; meta: { itemCount: number } }>(
-    `${endpoints.products.products}?${searchParams.toString()}`
+    `${endpoints.products.products}?${searchParams.toString()}`,
   );
 
   if ("error" in res) {
@@ -285,7 +295,7 @@ export async function fetchProducts(productName: string, page = "1") {
     latitude: favAddress.latitude,
   });
   const res = await getData<{ data: Product[]; meta: { itemCount: number } }>(
-    `${endpoints.products.products}?${searchParams.toString()}`
+    `${endpoints.products.products}?${searchParams.toString()}`,
   );
 
   if ("error" in res) {
@@ -294,7 +304,7 @@ export async function fetchProducts(productName: string, page = "1") {
   return {
     items: res?.data?.data,
     pagesCount: Math.ceil(
-      (res?.data?.meta?.itemCount || 0) / PRODUCTS_PER_PAGE
+      (res?.data?.meta?.itemCount || 0) / PRODUCTS_PER_PAGE,
     ),
   };
 }
@@ -308,7 +318,7 @@ export async function toggleFavorite({
 }) {
   const res = await postData<any, {}>(
     endpoints.products.favorite({ productId, sectionId }),
-    {}
+    {},
   );
 
   if ("error" in res) {

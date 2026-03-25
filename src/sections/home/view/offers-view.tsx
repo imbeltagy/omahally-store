@@ -1,24 +1,12 @@
-import { endpoints } from "@/utils/endpoints";
-import { getData } from "@/utils/crud-fetch-api";
+import { fetchOffers } from "@/actions/products-actions";
 
 import DailyOffers from "@/sections/home/daily-offers";
 
-import { Offer } from "@/types/products";
-
 export default async function OffersView() {
-  const offers = await getData<{ data: Offer[] }>(
-    `${endpoints.products.offers}?page=1&limit=8&sort=new`,
-  );
-
+  const offers = await fetchOffers(1, 8);
   if ("error" in offers) {
     return null;
   }
 
-  const items = offers.data.data;
-
-  if (items.length === 0) {
-    return null;
-  }
-
-  return <DailyOffers offers={items} />;
+  return <DailyOffers offers={offers.items} />;
 }
