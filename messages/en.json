@@ -254,7 +254,7 @@
       }
     },
     "Cart": {
-      "fast-delivery-time": "40min",
+      "minutes": "Minutes",
       "view_product": "View Product",
       "Steps": {
         "cart": "Adding items",

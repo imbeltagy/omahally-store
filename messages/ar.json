@@ -255,7 +255,7 @@
       }
     },
     "Cart": {
-      "fast-delivery-time": "40 دقيقة",
+      "minutes": "دقيقة",
       "view_product": "عرض المنتج",
       "Steps": {
         "cart": "إضافة متنجات",

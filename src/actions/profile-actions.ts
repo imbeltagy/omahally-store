@@ -8,10 +8,10 @@ import {
   deleteData,
 } from "@/utils/crud-fetch-api";
 
-import { Address } from "@/types/profile";
+import { Address, FullAddress } from "@/types/profile";
 
 export async function fetchAddresses() {
-  const res = await getData<Address[]>(endpoints.address.root);
+  const res = await getData<FullAddress[]>(endpoints.address.root);
 
   if ("error" in res) {
     return res;
@@ -31,7 +31,7 @@ interface AddAddressDataBody {
 export async function addAddress(dataBody: AddAddressDataBody) {
   const res = await postData<Address, AddAddressDataBody>(
     endpoints.address.root,
-    dataBody
+    dataBody,
   );
 
   if ("error" in res) {
@@ -48,7 +48,7 @@ export async function editAddress(dataBody: EditAddressDataBody) {
   const res = await editData<Address, EditAddressDataBody>(
     endpoints.address.root,
     "PUT",
-    dataBody
+    dataBody,
   );
 
   if ("error" in res) {
@@ -72,7 +72,7 @@ export async function setFavoriteAddress(id: string) {
   const res = await editData<any, {}>(
     endpoints.address.setFavorite(id),
     "PUT",
-    {}
+    {},
   );
 
   if ("error" in res) {

@@ -7,14 +7,16 @@ import { useAuthContext } from "@/auth/hooks";
 import { useCartStore } from "@/contexts/cart-store";
 import { fetchSections } from "@/actions/products-actions";
 import { fetchAddresses } from "@/actions/profile-actions";
+import { getCurrencies } from "@/actions/currency-actions";
 import { usecheckoutStore } from "@/contexts/checkout-store";
 import { fetchPayments, fetchCartProducts } from "@/actions/cart-actions";
 
 export default function InitCart() {
   const { authenticated } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
-  const { initProducts, setDeliveryFee, setMinOrderPrice } = useCartStore();
-  const { setAddresses, setDeliveryTypes, setPayments } = usecheckoutStore();
+  const { initProducts } = useCartStore();
+  const { setAddresses, setDeliveryTypes, setPayments, setCurrencies } =
+    usecheckoutStore();
 
   useEffect(() => {
     if (!authenticated) return;
@@ -34,9 +36,7 @@ export default function InitCart() {
         if (sectionRes.status !== 401)
           enqueueSnackbar(sectionRes.error, { variant: "error" });
       } else {
-        setMinOrderPrice(Number(sectionRes[0].min_order_price));
-        setDeliveryFee(Number(sectionRes[0].delivery_price));
-        setDeliveryTypes(sectionRes[0].delivery_type_list as "FAST"[]);
+        setDeliveryTypes([]);
       }
 
       const addressesRes = await fetchAddresses();
@@ -46,6 +46,15 @@ export default function InitCart() {
           enqueueSnackbar(addressesRes.error, { variant: "error" });
       } else {
         setAddresses(addressesRes);
+      }
+
+      const currenciesRes = await getCurrencies();
+
+      if ("error" in currenciesRes) {
+        if (currenciesRes.status !== 401)
+          enqueueSnackbar(currenciesRes.error, { variant: "error" });
+      } else {
+        setCurrencies(currenciesRes.data);
       }
 
       const paymentsRes = await fetchPayments();
@@ -62,9 +71,8 @@ export default function InitCart() {
     enqueueSnackbar,
     initProducts,
     setAddresses,
-    setDeliveryFee,
+    setCurrencies,
     setDeliveryTypes,
-    setMinOrderPrice,
     setPayments,
   ]);
 

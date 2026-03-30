@@ -47,6 +47,9 @@ export const endpoints = {
     delete: (id: string) => `addresses/${id}`,
     setFavorite: (id: string) => `addresses/${id}/set-favorite`,
   },
+  currency: {
+    list: "currency",
+  },
   banars: "banar/guest",
   orders: {
     single: (order_id: string) => `order/single-order/${order_id}`,

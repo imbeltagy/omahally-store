@@ -2,6 +2,8 @@
 
 import { useLocale } from "next-intl";
 
+import { useAuthContext } from "@/auth/hooks";
+import { usecheckoutStore } from "@/contexts/checkout-store";
 import { useCurrentLocale } from "@/i18n/localization-provider";
 import { LocaleType, localesSettings } from "@/i18n/config-locale";
 
@@ -64,11 +66,15 @@ export function fCurrency(inputValue: InputValue) {
 
 export function useCurrency() {
   const locale = useLocale() as LocaleType;
-  const { currency } = localesSettings[locale];
+  const { currency: settingsCurrency } = localesSettings[locale];
+
+  const { authenticated } = useAuthContext();
+  const { choosenAddress, currencies } = usecheckoutStore();
+  const addressCurrency = currencies.find(
+    (currency) => currency.code === choosenAddress?.currency,
+  )?.[locale === "en" ? "symbol_en" : "symbol_ar"];
 
   const formater = (inputValue: InputValue, currencyCode = true) => {
-    if (!inputValue) return "";
-
     const number = Number(inputValue);
 
     const fm = new Intl.NumberFormat("en-US", {
@@ -76,7 +82,9 @@ export function useCurrency() {
       maximumFractionDigits: 2,
     }).format(number);
 
-    return currencyCode ? `${fm} ${currency}` : fm;
+    return currencyCode
+      ? `${fm} ${authenticated ? addressCurrency || "" : settingsCurrency}`
+      : fm;
   };
 
   return formater;

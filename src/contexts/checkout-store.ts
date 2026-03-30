@@ -2,8 +2,11 @@ import { create } from "zustand";
 
 import { saveFavAddress } from "@/actions/auth-methods";
 
-import { Address } from "@/types/profile";
+import { Currency } from "@/types/currency";
+import { FullAddress } from "@/types/profile";
 import { Payment, TimeSlot } from "@/types/cart";
+
+import { useCartStore } from "./cart-store";
 
 type DeliveryType = "FAST" | "WAREHOUSE_PICKUP" | "SCHEDULED";
 
@@ -19,8 +22,10 @@ interface InitialState {
   deliveryTypes: DeliveryType[];
   choosenDeliveryType: DeliveryType | null;
 
-  addresses: Address[];
-  choosenAddress: Address | null;
+  addresses: FullAddress[];
+  choosenAddress: FullAddress | null;
+
+  currencies: Currency[];
 
   day: Date;
 
@@ -44,9 +49,11 @@ interface CheckoutStateActions {
   setChoosenDeliveryType: (deliveryType: DeliveryType | null) => void;
 
   setAddresses: (
-    addresses: Address[] | ((prev: Address[]) => Address[])
+    addresses: FullAddress[] | ((prev: FullAddress[]) => FullAddress[]),
   ) => void;
-  setChoosenAddress: (address: Address | null) => void;
+  setChoosenAddress: (address: FullAddress | null) => void;
+
+  setCurrencies: (currencies: Currency[]) => void;
 
   setDay: (day: Date) => void;
   setTimeSlot: (timeSlot: TimeSlot | null) => void;
@@ -55,7 +62,7 @@ interface CheckoutStateActions {
   setChoosenPayment: (payment: Payment | null) => void;
 
   setPaymentForm: (
-    paymentForm: PaymentForm | ((prev: PaymentForm) => PaymentForm)
+    paymentForm: PaymentForm | ((prev: PaymentForm) => PaymentForm),
   ) => void;
 
   setOrderId: (orderId: string | null) => void;
@@ -69,6 +76,8 @@ const initialState: InitialState = {
 
   addresses: [],
   choosenAddress: null,
+
+  currencies: [],
 
   day: new Date(),
 
@@ -105,13 +114,35 @@ export const usecheckoutStore = create<InitialState & CheckoutStateActions>()(
           ? addresses(state.addresses)
           : addresses;
       const favAddress = newAddresses.find((address) => address.is_favorite);
-      if (favAddress) saveFavAddress(favAddress);
+      const choosenAddress = state.choosenAddress || newAddresses[0];
+      if (favAddress) {
+        saveFavAddress(favAddress);
+        useCartStore.setState({
+          minOrderPrice: choosenAddress.min_order_price,
+          deliveryFee: choosenAddress.delivery_price,
+        });
+      }
+
       set({
         addresses: newAddresses,
-        choosenAddress: state.choosenAddress || newAddresses[0],
+        choosenAddress,
+        deliveryTypes: choosenAddress.delivery_type,
       });
     },
-    setChoosenAddress: (address) => set(() => ({ choosenAddress: address })),
+    setChoosenAddress: (address) => {
+      if (address)
+        useCartStore.setState({
+          minOrderPrice: address.min_order_price,
+          deliveryFee: address.delivery_price,
+        });
+
+      set({
+        choosenAddress: address,
+        deliveryTypes: address ? address.delivery_type : [],
+      });
+    },
+
+    setCurrencies: (currencies) => set(() => ({ currencies })),
 
     setDay: (day) => set(() => ({ day })),
     setTimeSlot: (timeSlot) => set(() => ({ timeSlot })),
@@ -128,5 +159,5 @@ export const usecheckoutStore = create<InitialState & CheckoutStateActions>()(
       })),
 
     setOrderId: (orderId) => set(() => ({ orderId })),
-  })
+  }),
 );

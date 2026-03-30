@@ -33,6 +33,7 @@ export default function TimeSelect() {
   const t = useTranslations("Pages.Cart");
   const { enqueueSnackbar } = useSnackbar();
   const {
+    choosenAddress,
     deliveryTypes,
     choosenDeliveryType,
     setChoosenDeliveryType,
@@ -81,7 +82,7 @@ export default function TimeSelect() {
               marginInlineStart="auto"
               sx={{ bgcolor: "warning.main", color: "white" }}
             >
-              {t("fast-delivery-time")}
+              {Math.trunc(choosenAddress?.delivery_time || 40)} {t("minutes")}
             </Label>
           )}
 
@@ -109,7 +110,7 @@ export default function TimeSelect() {
         value={timeSlot?.id || undefined}
         onChange={(event: SelectChangeEvent) =>
           setTimeSlot(
-            times.find((item) => item.id === event.target.value) || null
+            times.find((item) => item.id === event.target.value) || null,
           )
         }
       >

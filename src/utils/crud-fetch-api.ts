@@ -1,3 +1,5 @@
+"use server";
+
 import { cookies } from "next/headers";
 
 import { defaultLocale } from "@/i18n/config-locale";
@@ -26,12 +28,12 @@ async function apiRequest<TResponse, TBody = undefined>(
   endpoint: string,
   method: string,
   body?: TBody,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<ApiResponse<TResponse>> {
   const url = `${API_BASE_URL}${endpoint}`;
   const cookie = cookies().getAll();
   const token = cookie.find(
-    (item) => item.name === COOKIES_KEYS.session
+    (item) => item.name === COOKIES_KEYS.session,
   )?.value;
   const lang =
     cookie.find((item) => item.name === COOKIES_KEYS.lang)?.value ||
@@ -69,7 +71,7 @@ async function apiRequest<TResponse, TBody = undefined>(
 
     if (commonErrorStatus.has(response.status)) {
       const errMsg = commonErrorMessages.get(
-        response.status.toString()
+        response.status.toString(),
       ) as string;
       return errorObject(errMsg, response.status);
     }
@@ -103,7 +105,7 @@ async function apiRequest<TResponse, TBody = undefined>(
         resCode,
         resDetails,
         resData,
-        resVErrors
+        resVErrors,
       );
     }
 
@@ -125,7 +127,7 @@ async function apiRequest<TResponse, TBody = undefined>(
 // CRUD functions
 export async function getData<TResponse>(
   endpoint: string,
-  options?: RequestOptions
+  options?: RequestOptions,
 ): Promise<ApiResponse<TResponse>> {
   return apiRequest<TResponse>(endpoint, "GET", undefined, options);
 }
@@ -133,7 +135,7 @@ export async function getData<TResponse>(
 export async function postData<TResponse, TBody>(
   endpoint: string,
   data: TBody,
-  options?: RequestOptions
+  options?: RequestOptions,
 ): Promise<ApiResponse<TResponse>> {
   return apiRequest<TResponse, TBody>(endpoint, "POST", data, options);
 }
@@ -142,14 +144,14 @@ export async function editData<TResponse, TBody>(
   endpoint: string,
   method: "PUT" | "PATCH",
   data: TBody,
-  options?: RequestOptions
+  options?: RequestOptions,
 ): Promise<ApiResponse<TResponse>> {
   return apiRequest<TResponse, TBody>(endpoint, method, data, options);
 }
 
 export async function deleteData<TResponse>(
   endpoint: string,
-  options?: RequestOptions
+  options?: RequestOptions,
 ): Promise<ApiResponse<TResponse>> {
   return apiRequest<TResponse>(endpoint, "DELETE", undefined, options);
 }
@@ -160,7 +162,7 @@ const errorObject = (
   code: unknown = null,
   details: unknown = null,
   data: unknown = {},
-  validationErrors: unknown = null
+  validationErrors: unknown = null,
 ): ApiErrorResponse => ({
   success: false,
   error,

@@ -72,7 +72,7 @@ export default function OrderSumamry() {
         {
           label: t("Summary.delivery-type"),
           value: t(`DeliveryTypes.${choosenDeliveryType}`),
-        }
+        },
       );
 
     if (step > 1 && choosenDeliveryType === "SCHEDULED")
@@ -84,7 +84,7 @@ export default function OrderSumamry() {
         {
           label: t("Summary.delivery-time"),
           value: `${timeSlot?.start_time} - ${timeSlot?.end_time} ${t(`TimeZones.${timeSlot?.time_zone}`)}`,
-        }
+        },
       );
 
     if (step > 1 && choosenDeliveryType !== "WAREHOUSE_PICKUP")
@@ -135,7 +135,7 @@ export default function OrderSumamry() {
           </Stack>
         ) : (
           item.value
-        )
+        ),
       )}
     </Stack>
   );
