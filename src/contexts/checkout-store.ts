@@ -35,6 +35,8 @@ interface InitialState {
 
   choosenPayment: Payment | null;
 
+  walletDiscount: number;
+
   paymentForm: PaymentForm;
 
   orderId: string | null;
@@ -61,6 +63,8 @@ interface CheckoutStateActions {
   setPayments: (payments: Payment[]) => void;
   setChoosenPayment: (payment: Payment | null) => void;
 
+  setWalletDiscount: (walletDiscount: number) => void;
+
   setPaymentForm: (
     paymentForm: PaymentForm | ((prev: PaymentForm) => PaymentForm),
   ) => void;
@@ -86,6 +90,8 @@ const initialState: InitialState = {
   payments: [],
 
   choosenPayment: null,
+
+  walletDiscount: 0,
 
   paymentForm: { notes: "" },
 
@@ -149,6 +155,8 @@ export const usecheckoutStore = create<InitialState & CheckoutStateActions>()(
 
     setPayments: (payments) => set(() => ({ payments })),
     setChoosenPayment: (payment) => set(() => ({ choosenPayment: payment })),
+
+    setWalletDiscount: (walletDiscount) => set(() => ({ walletDiscount })),
 
     setPaymentForm: (paymentForm) =>
       set((state) => ({

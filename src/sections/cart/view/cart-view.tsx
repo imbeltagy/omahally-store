@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useMemo, useEffect } from "react";
 import { useTranslations } from "next-intl";
 
 import { Box, Step, Stack, Stepper, StepLabel, Container } from "@mui/material";
@@ -16,11 +16,23 @@ import PaymentStep from "../payment-step";
 import OrderSumamry from "../order-summary";
 import TimeLocationStep from "../time-location-step";
 
-export default function Cart() {
+export default function Cart({
+  wallet,
+}: {
+  wallet: Record<string, string | number>;
+}) {
   const t = useTranslations("Pages.Cart");
 
   const { products } = useCartStore();
-  const { step, setStep } = usecheckoutStore();
+  const { step, setStep, choosenAddress } = usecheckoutStore();
+
+  const balance = useMemo(
+    () =>
+      choosenAddress?.currency
+        ? Number(wallet[choosenAddress.currency]) || 0
+        : 0,
+    [wallet, choosenAddress],
+  );
 
   useEffect(() => {
     setStep(0);
@@ -40,7 +52,11 @@ export default function Cart() {
     </Stack>
   );
 
-  const stepsElements = [<CartStep />, <TimeLocationStep />, <PaymentStep />];
+  const stepsElements = [
+    <CartStep />,
+    <TimeLocationStep />,
+    <PaymentStep balance={balance} />,
+  ];
 
   if (step >= stepsElements.length) return <DoneStep />;
   if (products.length === 0) return <EmptyView />;

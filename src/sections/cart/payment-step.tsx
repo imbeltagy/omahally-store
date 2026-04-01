@@ -1,6 +1,17 @@
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
-import { Box, Grid, Typography, CardContent } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Card,
+  Stack,
+  TextField,
+  Typography,
+  CardContent,
+} from "@mui/material";
+
+import { useCurrency } from "@/utils/format-number";
 
 import { useCartStore } from "@/contexts/cart-store";
 import { usecheckoutStore } from "@/contexts/checkout-store";
@@ -9,9 +20,17 @@ import ActiveCard from "@/components/active-card";
 
 import PaymentDetails from "./payment-details";
 
-export default function PaymentStep() {
-  const { setPromocode } = useCartStore();
-  const { payments, choosenPayment, setChoosenPayment } = usecheckoutStore();
+export default function PaymentStep({ balance }: { balance: number }) {
+  const t = useTranslations("Pages.Cart.Payment");
+  const { setPromocode, totalPrice } = useCartStore();
+  const {
+    payments,
+    choosenPayment,
+    setChoosenPayment,
+    walletDiscount,
+    setWalletDiscount,
+  } = usecheckoutStore();
+  const currency = useCurrency();
 
   const renderPayments = (
     <Grid container spacing={1}>
@@ -49,9 +68,29 @@ export default function PaymentStep() {
     </Grid>
   );
 
+  const rednerWalletDiscount = (
+    <Card>
+      <CardContent component={Stack} spacing={1}>
+        <Typography variant="h6">{t("wallet_discount")}</Typography>
+        <TextField
+          value={walletDiscount}
+          onChange={(e) => setWalletDiscount(Number(e.target.value))}
+          fullWidth
+          type="number"
+          inputProps={{
+            max: Math.min(balance, totalPrice),
+          }}
+          helperText={`${t("wallet_balance")}: ${currency(balance)}`}
+        />
+      </CardContent>
+    </Card>
+  );
+
   return (
     <Box>
       {renderPayments}
+      <Box mt={3} />
+      {balance > 0 && rednerWalletDiscount}
       <Box mt={3} />
       <PaymentDetails />
     </Box>

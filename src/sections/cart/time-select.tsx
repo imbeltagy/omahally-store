@@ -106,20 +106,31 @@ export default function TimeSelect() {
           </Typography>
         </Typography>
       </ButtonBase>
-      <Select
-        value={timeSlot?.id || undefined}
-        onChange={(event: SelectChangeEvent) =>
-          setTimeSlot(
-            times.find((item) => item.id === event.target.value) || null,
-          )
-        }
-      >
-        {times.map((item) => (
-          <MenuItem value={item.id} key={item.id}>
-            {`${item.start_time === "00:00" ? "12:00" : item.start_time} - ${item.end_time === "00:00" ? "12:00" : item.end_time} ${t(`TimeZones.${item.time_zone}`)}`}
-          </MenuItem>
-        ))}
-      </Select>
+      {times.length > 0 ? (
+        <Select
+          value={timeSlot?.id || undefined}
+          onChange={(event: SelectChangeEvent) =>
+            setTimeSlot(
+              times.find((item) => item.id === event.target.value) || null,
+            )
+          }
+        >
+          {times.map((item) => (
+            <MenuItem value={item.id} key={item.id}>
+              {`${item.start_time === "00:00" ? "12:00" : item.start_time} - ${item.end_time === "00:00" ? "12:00" : item.end_time} ${t(`TimeZones.${item.time_zone}`)}`}
+            </MenuItem>
+          ))}
+        </Select>
+      ) : (
+        <Typography
+          variant="body2"
+          color="error"
+          paddingInlineStart={1.5}
+          pb={2.5}
+        >
+          {t("no_delivery_available_that_day")}
+        </Typography>
+      )}
     </>
   );
 

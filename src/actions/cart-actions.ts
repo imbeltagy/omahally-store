@@ -90,6 +90,7 @@ export interface CreateOrderBody {
   section_id: string;
   promo_code?: string;
   note: string;
+  wallet_discount: number;
   payment_method: {
     payment_method_id: string;
     transaction_number?: string;

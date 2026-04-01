@@ -47,6 +47,7 @@ export const endpoints = {
     delete: (id: string) => `addresses/${id}`,
     setFavorite: (id: string) => `addresses/${id}/set-favorite`,
   },
+  wallet: "transaction/wallet",
   currency: {
     list: "currency",
   },

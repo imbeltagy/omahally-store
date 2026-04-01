@@ -27,6 +27,7 @@ export default function FinishButton(props: ButtonProps) {
     day,
     initCheckout,
     setOrderId,
+    walletDiscount,
   } = usecheckoutStore();
   const [loading, setLoading] = useState(false);
 
@@ -54,6 +55,7 @@ export default function FinishButton(props: ButtonProps) {
       section_id: products[0]?.section_id || "",
       promo_code: promocode?.code || "",
       note: paymentForm.notes,
+      wallet_discount: walletDiscount || 0,
       payment_method: {
         payment_method_id: choosenPayment?.id || "",
         transaction_number: paymentForm.transaction_number || "",
@@ -95,6 +97,7 @@ export default function FinishButton(props: ButtonProps) {
     setOrderId,
     setStep,
     timeSlot?.id,
+    walletDiscount,
   ]);
 
   return (

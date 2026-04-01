@@ -257,6 +257,7 @@
     "Cart": {
       "minutes": "دقيقة",
       "view_product": "عرض المنتج",
+      "no_delivery_available_that_day": "لا يوجد وقت متاح للتوصيل هذا اليوم، يرجى اختيار يوم اخر",
       "Steps": {
         "cart": "إضافة متنجات",
         "time-location": "الوقت والمكان",
@@ -315,7 +316,9 @@
         "jaib-description": "يرجي إدخال كود الشراء الذي تم توليده من تطبيق جيب",
         "jaib-transaction-number": "كود الشراء من تطبيق جيب",
         "notes": "ملاحظات عن الطلب",
-        "policy": "الموافقة على <terms>الشروط والأحكام</terms>."
+        "policy": "الموافقة على <terms>الشروط والأحكام</terms>.",
+        "wallet_balance": "رصيد المحفظة",
+        "wallet_discount": "خصم من المحفظة"
       },
       "Done": {
         "title": "تم الطلب",
