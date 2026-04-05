@@ -8,7 +8,7 @@ import {
   deleteData,
 } from "@/utils/crud-fetch-api";
 
-import { Address, FullAddress } from "@/types/profile";
+import { FullAddress } from "@/types/profile";
 
 export async function fetchAddresses() {
   const res = await getData<FullAddress[]>(endpoints.address.root);
@@ -29,7 +29,7 @@ interface AddAddressDataBody {
 }
 
 export async function addAddress(dataBody: AddAddressDataBody) {
-  const res = await postData<Address, AddAddressDataBody>(
+  const res = await postData<FullAddress, AddAddressDataBody>(
     endpoints.address.root,
     dataBody,
   );
@@ -45,7 +45,7 @@ interface EditAddressDataBody extends AddAddressDataBody {
 }
 
 export async function editAddress(dataBody: EditAddressDataBody) {
-  const res = await editData<Address, EditAddressDataBody>(
+  const res = await editData<FullAddress, EditAddressDataBody>(
     endpoints.address.root,
     "PUT",
     dataBody,

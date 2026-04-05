@@ -18,12 +18,12 @@ import Label from "@/components/label";
 import Iconify from "@/components/iconify";
 import ActiveCard from "@/components/active-card";
 
-import { Address } from "@/types/profile";
+import { FullAddress } from "@/types/profile";
 
 interface Props {
-  address: Address;
-  selectedItem: Address | null;
-  setSelectedItem: (address: Address | null) => void;
+  address: FullAddress;
+  selectedItem: FullAddress | null;
+  setSelectedItem: (address: FullAddress | null) => void;
   handleEdit: () => void;
 }
 
@@ -51,7 +51,7 @@ export default function AddressCard({
         }
       })();
     },
-    [enqueueSnackbar, setAddresses, t]
+    [enqueueSnackbar, setAddresses, t],
   );
 
   return (
