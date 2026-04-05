@@ -100,6 +100,7 @@ export default function BrandsSwiper({ brands }: Props) {
               sx={(theme) => ({
                 transition: "transform 0.3s ease, box-shadow 0.3s ease",
                 height: "100%",
+                width: "100%",
                 display: "grid",
                 gridTemplateRows: "auto 1fr",
                 "&:hover": {
