@@ -2,7 +2,6 @@
 
 import { useLocale } from "next-intl";
 
-import { useAuthContext } from "@/auth/hooks";
 import { usecheckoutStore } from "@/contexts/checkout-store";
 import { useCurrentLocale } from "@/i18n/localization-provider";
 import { LocaleType, localesSettings } from "@/i18n/config-locale";
@@ -68,7 +67,6 @@ export function useCurrency() {
   const locale = useLocale() as LocaleType;
   const { currency: settingsCurrency } = localesSettings[locale];
 
-  const { authenticated } = useAuthContext();
   const { choosenAddress, currencies } = usecheckoutStore();
   const addressCurrency = currencies.find(
     (currency) => currency.code === choosenAddress?.currency,
@@ -83,7 +81,7 @@ export function useCurrency() {
     }).format(number);
 
     return currencyCode
-      ? `${fm} ${authenticated ? addressCurrency || "" : settingsCurrency}`
+      ? `${fm} ${choosenAddress ? addressCurrency || "" : settingsCurrency}`
       : fm;
   };
 

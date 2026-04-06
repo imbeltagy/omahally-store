@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -26,7 +28,7 @@ export default function OrderAgainProductCard({ order }: { order: any }) {
     name: item.product_name,
   }));
   const names = products.map(
-    (item: any) => `${item.measurement_unit_name} ${item.product_name}`
+    (item: any) => `${item.measurement_unit_name} ${item.product_name}`,
   );
 
   return (
