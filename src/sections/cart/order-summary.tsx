@@ -165,7 +165,9 @@ export default function OrderSumamry() {
           color="primary"
           onClick={() => setStep((prev) => prev + 1)}
           sx={{ flexGrow: 1 }}
-          disabled={totalPrice < minOrderPrice || !choosenDeliveryType}
+          disabled={
+            totalPrice < minOrderPrice || (!choosenDeliveryType && step >= 1)
+          }
         >
           {t("Summary.next")}
         </Button>
