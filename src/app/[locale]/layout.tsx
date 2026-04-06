@@ -35,8 +35,8 @@ export default async function LocaleLayout({
   const theme: DeepPartial<Theme> = { palette: { primary: {}, secondary: {} } };
   const appTheme = await getAppTheme();
   if (!("error" in appTheme)) {
-    const primaryMain = appTheme.data?.primary_color;
-    const secondaryMain = appTheme.data?.secondary_color;
+    const primaryMain = appTheme.data?.theme.primary_color;
+    const secondaryMain = appTheme.data?.theme.secondary_color;
 
     if (primaryMain) theme.palette!.primary = generatePalette(primaryMain);
 
