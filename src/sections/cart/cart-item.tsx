@@ -119,7 +119,7 @@ export default function CartItem({ product }: { product: CartProduct }) {
       <Typography variant="subtitle2">
         {`${t("total")} : `}
         <Typography variant="inherit" fontWeight="700" component="span">
-          {currency(product.original_price * product.quantity)}
+          {currency(product.price * product.quantity)}
         </Typography>
       </Typography>
 

@@ -45,6 +45,8 @@ const StyledButton = styled(IconButton)(({ theme }) => ({
 export default function CollectionsList({ collections }: Props) {
   const locale = useLocale() as LocaleType;
 
+  console.log(collections);
+
   return (
     <Box py={SECTION_PADDING}>
       <Container>
