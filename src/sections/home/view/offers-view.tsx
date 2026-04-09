@@ -4,7 +4,8 @@ import DailyOffers from "@/sections/home/daily-offers";
 
 export default async function OffersView() {
   const offers = await fetchOffers(1, 8);
-  if ("error" in offers) {
+
+  if ("error" in offers || offers.items.length === 0) {
     return null;
   }
 
