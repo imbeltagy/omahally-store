@@ -27,7 +27,7 @@ export default async function Layout({ children, searchParams }: Props) {
   let logo: string | undefined;
   const theme = await getAppTheme();
   if (!("error" in theme)) {
-    logo = theme.data?.logo;
+    logo = theme.data?.theme.logo;
   }
 
   return (
