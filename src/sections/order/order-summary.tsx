@@ -1,3 +1,5 @@
+"use client";
+
 import { useTranslations } from "next-intl";
 
 import { Card, Stack, Typography, CardContent } from "@mui/material";
