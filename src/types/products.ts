@@ -186,6 +186,7 @@ export interface Collection {
   description: string;
   is_active: boolean;
   order_by: number;
+  is_grid: boolean;
 }
 
 export interface CollectionWithProducts {

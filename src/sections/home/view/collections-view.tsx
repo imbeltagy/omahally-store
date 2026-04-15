@@ -19,7 +19,6 @@ export default async function CollectionsView({
   const collectionsRes = await fetchCollections();
   const collections: CollectionWithProducts[] =
     "error" in collectionsRes ? [] : collectionsRes;
-
   const filteredCollections = collections.filter((item) => {
     if (filter === "both") return true;
 
