@@ -1,11 +1,12 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 import { endpoints } from "@/utils/endpoints";
 import { postData } from "@/utils/crud-fetch-api";
 
-import { COOKIES_KEYS, DEFAULT_ADDRESS } from "@/config-global";
+import { COOKIES_KEYS } from "@/config-global";
 
 import { Address } from "@/types/profile";
 
@@ -72,6 +73,8 @@ export async function logUserOut() {
   cookies().delete(COOKIES_KEYS.session);
   cookies().delete(COOKIES_KEYS.user);
   cookies().delete(COOKIES_KEYS.expiryTime);
+  cookies().delete(COOKIES_KEYS.favAddress);
+  revalidatePath("/", "layout");
 }
 export type verifyOtpCredentials = {
   phoneNumber: string;
@@ -96,9 +99,10 @@ export async function saveFavAddress(
     JSON.stringify({ latitude: address.latitude, longitude: address.longitude })
   );
 }
-export async function getFavAddress(): Promise<
-  Pick<Address, "latitude" | "longitude">
-> {
+export async function getFavAddress(): Promise<Pick<
+  Address,
+  "latitude" | "longitude"
+> | null> {
   const cookieAddress = cookies().get(COOKIES_KEYS.favAddress)?.value;
-  return cookieAddress ? JSON.parse(cookieAddress) : DEFAULT_ADDRESS;
+  return cookieAddress ? JSON.parse(cookieAddress) : null;
 }

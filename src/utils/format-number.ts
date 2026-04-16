@@ -2,9 +2,9 @@
 
 import { useLocale } from "next-intl";
 
+import { LocaleType } from "@/i18n/config-locale";
 import { usecheckoutStore } from "@/contexts/checkout-store";
 import { useCurrentLocale } from "@/i18n/localization-provider";
-import { LocaleType, localesSettings } from "@/i18n/config-locale";
 
 /*
  * Locales code
@@ -65,11 +65,13 @@ export function fCurrency(inputValue: InputValue) {
 
 export function useCurrency() {
   const locale = useLocale() as LocaleType;
-  const { currency: settingsCurrency } = localesSettings[locale];
 
-  const { choosenAddress, currencies } = usecheckoutStore();
+  const { choosenAddress, choosenCurrency, currencies } = usecheckoutStore();
   const addressCurrency = currencies.find(
     (currency) => currency.code === choosenAddress?.currency,
+  )?.[locale === "en" ? "symbol_en" : "symbol_ar"];
+  const selectedCurrency = currencies.find(
+    (currency) => currency.code === choosenCurrency,
   )?.[locale === "en" ? "symbol_en" : "symbol_ar"];
 
   const formater = (inputValue: InputValue, currencyCode = true) => {
@@ -80,9 +82,15 @@ export function useCurrency() {
       maximumFractionDigits: 2,
     }).format(number);
 
-    return currencyCode
-      ? `${fm} ${choosenAddress ? addressCurrency || "" : settingsCurrency}`
-      : fm;
+    if (!currencyCode) return fm;
+
+    const currencyLabel = choosenAddress
+      ? addressCurrency || ""
+      : selectedCurrency || "";
+
+    if (!currencyLabel) return fm;
+
+    return `${fm} ${currencyLabel}`;
   };
 
   return formater;

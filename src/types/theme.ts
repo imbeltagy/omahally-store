@@ -1,4 +1,7 @@
+import { Currency } from "./currency";
+
 export interface AppTheme {
+  currency?: Currency;
   theme: {
     logo: string;
     name: string;

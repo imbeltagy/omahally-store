@@ -2,7 +2,7 @@
 
 import { getCookie } from "cookies-next";
 import { useTranslations } from "next-intl";
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, type ReactNode } from "react";
 
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
@@ -28,11 +28,18 @@ import { GoogleMap } from "@/components/map";
 
 import type { Position } from "@/types/map";
 
-type View = "choice" | "map";
+type Props = {
+  forceOpen?: boolean;
+  children: ReactNode;
+  noWarehouseNear?: boolean;
+};
 
-export default function GuestGate() {
+export default function GuestGate({
+  forceOpen = false,
+  children,
+  noWarehouseNear = false,
+}: Props) {
   const t = useTranslations("Pages.GuestGate");
-  const tCartLoc = useTranslations("Pages.Cart.Location");
   const { loading, authenticated } = useAuthContext();
   const pathname = usePathname();
   const router = useRouter();
@@ -40,7 +47,6 @@ export default function GuestGate() {
   const [hasAddressCookie, setHasAddressCookie] = useState(
     () => !!getCookie(COOKIES_KEYS.favAddress)
   );
-  const [view, setView] = useState<View>("choice");
   const [position, setPosition] = useState<Position | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -55,16 +61,10 @@ export default function GuestGate() {
   const isAuthRoute = pathname?.startsWith("/auth") ?? false;
 
   const showGate =
-    !loading && !authenticated && !hasAddressCookie && !isAuthRoute;
-
-  const handleOpenMap = useCallback(() => {
-    setPosition(defaultMapPosition);
-    setView("map");
-  }, [defaultMapPosition]);
-
-  const handleBackFromMap = useCallback(() => {
-    setView("choice");
-  }, []);
+    !loading &&
+    !authenticated &&
+    (forceOpen || !hasAddressCookie) &&
+    !isAuthRoute;
 
   const handleSaveLocation = useCallback(async () => {
     const pos = position ?? defaultMapPosition;
@@ -75,78 +75,64 @@ export default function GuestGate() {
         longitude: pos.lng.toString(),
       });
       setHasAddressCookie(true);
-      setView("choice");
       router.refresh();
     } finally {
       setSaving(false);
     }
   }, [defaultMapPosition, position, router]);
 
-  if (!showGate) {
+  if (loading) {
     return null;
+  }
+
+  if (!showGate) {
+    return <>{children}</>;
   }
 
   return (
     <Dialog
       open
       fullWidth
-      maxWidth={view === "map" ? "sm" : "xs"}
+      maxWidth="sm"
       disableEscapeKeyDown
       onClose={() => {
         /* non-dismissible */
       }}
     >
-      {view === "choice" ? (
-        <>
-          <DialogTitle>{t("title")}</DialogTitle>
-          <DialogContent>
-            <Stack spacing={2}>
-              <Typography variant="body2" color="text.secondary">
-                {t("message")}
-              </Typography>
-              <Button
-                color="primary"
-                variant="contained"
-                href={paths.auth.jwt.login}
-                LinkComponent={RouterLink}
-              >
-                {t("login")}
-              </Button>
-              <Button variant="outlined" onClick={handleOpenMap}>
-                {t("choose_address")}
-              </Button>
-            </Stack>
-          </DialogContent>
-        </>
-      ) : (
-        <>
-          <DialogTitle>{t("map_title")}</DialogTitle>
-          <DialogContent>
-            <Box height="20rem" sx={{ mt: 0.5 }}>
-              <GoogleMap
-                defaultPosition={defaultMapPosition}
-                setCurrentPosition={(p) => setPosition(p)}
-              />
-            </Box>
-            <Typography variant="caption" color="text.secondary" display="block" mt={1}>
-              {t("map_hint")}
-            </Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button variant="outlined" onClick={handleBackFromMap}>
-              {tCartLoc("back")}
-            </Button>
-            <LoadingButton
-              variant="contained"
-              color="primary"
-              loading={saving}
-              onClick={handleSaveLocation}
-            >
-              {t("confirm_location")}
-            </LoadingButton>
-          </DialogActions>
-        </>
-      )}
+      <DialogTitle>{t("map_title")}</DialogTitle>
+      <DialogContent sx={{ overflow: "visible" }}>
+        <Stack spacing={1.5}>
+          <Typography
+            variant="body2"
+            color={noWarehouseNear ? "error" : "text.secondary"}
+          >
+            {noWarehouseNear ? t("no_warehouse_near_message") : t("message")}
+          </Typography>
+          <Box height="20rem" sx={{ mt: 0.5 }}>
+            <GoogleMap
+              defaultPosition={defaultMapPosition}
+              setCurrentPosition={(p) => setPosition(p)}
+            />
+          </Box>
+        </Stack>
+      </DialogContent>
+      <DialogActions sx={{ gap: 1 }}>
+        <Button
+          variant="outlined"
+          href={paths.auth.jwt.login}
+          LinkComponent={RouterLink}
+        >
+          {t("login")}
+        </Button>
+        <LoadingButton
+          variant="contained"
+          color="primary"
+          loading={saving}
+          onClick={handleSaveLocation}
+        >
+          {t("confirm_location")}
+        </LoadingButton>
+      </DialogActions>
     </Dialog>
   );
 }

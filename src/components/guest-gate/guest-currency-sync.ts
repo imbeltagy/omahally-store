@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 
-import { useAuthContext } from "@/auth/hooks/use-auth-context";
 import { usecheckoutStore } from "@/contexts/checkout-store";
+import { useAuthContext } from "@/auth/hooks/use-auth-context";
 
 type Props = {
   currencyCode: string | null;

@@ -110,6 +110,7 @@ export function AuthProvider({ children }: Props) {
   // LOGOUT
   const logout = useCallback(async () => {
     await logUserOut();
+
     dispatch({
       type: Types.LOGOUT,
     });

@@ -26,6 +26,7 @@ interface InitialState {
   choosenAddress: FullAddress | null;
 
   currencies: Currency[];
+  choosenCurrency: string | null;
 
   day: Date;
 
@@ -56,6 +57,7 @@ interface CheckoutStateActions {
   setChoosenAddress: (address: FullAddress | null) => void;
 
   setCurrencies: (currencies: Currency[]) => void;
+  setChoosenCurrency: (currency: string | null) => void;
 
   setDay: (day: Date) => void;
   setTimeSlot: (timeSlot: TimeSlot | null) => void;
@@ -82,6 +84,7 @@ const initialState: InitialState = {
   choosenAddress: null,
 
   currencies: [],
+  choosenCurrency: null,
 
   day: new Date(),
 
@@ -136,11 +139,13 @@ export const usecheckoutStore = create<InitialState & CheckoutStateActions>()(
       });
     },
     setChoosenAddress: (address) => {
-      if (address)
+      if (address) {
+        saveFavAddress(address);
         useCartStore.setState({
           minOrderPrice: address.min_order_price,
           deliveryFee: address.delivery_price,
         });
+      }
 
       set({
         choosenAddress: address,
@@ -149,6 +154,7 @@ export const usecheckoutStore = create<InitialState & CheckoutStateActions>()(
     },
 
     setCurrencies: (currencies) => set(() => ({ currencies })),
+    setChoosenCurrency: (choosenCurrency) => set(() => ({ choosenCurrency })),
 
     setDay: (day) => set(() => ({ day })),
     setTimeSlot: (timeSlot) => set(() => ({ timeSlot })),

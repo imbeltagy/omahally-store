@@ -337,6 +337,15 @@
       "login": "Login",
       "browsing": "Continue Browsing"
     },
+    "GuestGate": {
+      "title": "Choose how to continue",
+      "map_title": "Choose your delivery location",
+      "message": "Select your location on the map and press Save, or login to continue with your account.",
+      "no_warehouse_near_message": "No warehouse near your location, please select another location, or login to continue with your account.",
+      "map_hint": "Drag the map pin to your exact location before saving.",
+      "login": "Login",
+      "confirm_location": "Save"
+    },
     "LegalPages": {
       "ABOUT_US": "About Us",
       "TERMS_AND_CONDITIONS": "Terms and Conditions",

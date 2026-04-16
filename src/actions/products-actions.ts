@@ -21,6 +21,15 @@ import {
 
 import { getFavAddress } from "./auth-methods";
 
+function appendFavAddressParams(
+  searchParams: URLSearchParams,
+  favAddress: { latitude: string; longitude: string } | null
+) {
+  if (!favAddress) return;
+  searchParams.set("longitude", favAddress.longitude);
+  searchParams.set("latitude", favAddress.latitude);
+}
+
 export async function fetchSections() {
   const sectionRes = await getData<Section[]>(endpoints.products.sections);
   if ("error" in sectionRes) {
@@ -82,9 +91,8 @@ export async function fetchProductsBySubCategory(
     page: String(page),
     limit: String(PRODUCTS_PER_PAGE),
     sort: "new",
-    longitude: favAddress.longitude,
-    latitude: favAddress.latitude,
   });
+  appendFavAddressParams(searchParams, favAddress);
 
   const res = await getData<{ data: Product[]; meta: { itemCount: number } }>(
     `${endpoints.products.products}?${searchParams.toString()}`
@@ -109,9 +117,8 @@ export async function fetchProductsByBrand(brandId: string, page = 1) {
     page: String(page),
     limit: String(PRODUCTS_PER_PAGE),
     sort: "new",
-    longitude: favAddress.longitude,
-    latitude: favAddress.latitude,
   });
+  appendFavAddressParams(searchParams, favAddress);
   const res = await getData<{ data: Product[]; meta: { itemCount: number } }>(
     `${endpoints.products.products}?${searchParams.toString()}`
   );
@@ -171,11 +178,10 @@ export async function fetchOffers(page = 1, limit = PRODUCTS_PER_PAGE) {
     page: String(page),
     limit: String(limit),
     sort: "new",
-    longitude: favAddress.longitude,
-    latitude: favAddress.latitude,
     section_id: sectionId || "",
     user_id: userId || "",
   });
+  appendFavAddressParams(searchParams, favAddress);
 
   const res = await getData<{ data: Offer[]; meta: { itemCount: number } }>(
     `${endpoints.products.offers}?${searchParams.toString()}`
@@ -197,8 +203,8 @@ export async function fetchCollections() {
   const searchParams = new URLSearchParams({
     page: "1",
     limit: "1",
-    latitude: favAddress.latitude,
-    longitude: favAddress.longitude,
+    latitude: favAddress?.latitude || "",
+    longitude: favAddress?.longitude || "",
   });
   const res = await getData<{ collections: CollectionWithProducts[] }>(
     `${endpoints.products.collections}?${searchParams.toString()}`
@@ -224,9 +230,8 @@ export async function fetchProductsByCollection(
     page: String(page),
     limit: String(limit),
     sort: "new",
-    longitude: favAddress.longitude,
-    latitude: favAddress.latitude,
   });
+  appendFavAddressParams(searchParams, favAddress);
 
   const res = await getData<{ data: Product[]; meta: { itemCount: number } }>(
     `${endpoints.products.products}?${searchParams.toString()}`
@@ -246,8 +251,13 @@ export async function fetchSingleProduct(productId: string) {
   const user = JSON.parse(cookies().get(COOKIES_KEYS.user)?.value || "{}");
   const favAddress = await getFavAddress();
 
+  const searchParams = new URLSearchParams({
+    user_id: user.id || "",
+  });
+  appendFavAddressParams(searchParams, favAddress);
+
   const res = await getData<FullProduct>(
-    `${endpoints.products.singleProduct}/${productId}?user_id=${user.id || ""}&latitude=${favAddress.latitude}&longitude=${favAddress.longitude}`
+    `${endpoints.products.singleProduct}/${productId}?user_id=${user.id || ""}&latitude=${favAddress?.latitude || ""}&longitude=${favAddress?.longitude || ""}`
   );
   if ("error" in res) {
     if (res.status === 404) {
@@ -273,9 +283,8 @@ export async function searchProducts(search: string) {
     page: String(1),
     limit: String(10),
     sort: "new",
-    longitude: favAddress.longitude,
-    latitude: favAddress.latitude,
   });
+  appendFavAddressParams(searchParams, favAddress);
   const res = await getData<{ data: Product[]; meta: { itemCount: number } }>(
     `${endpoints.products.products}?${searchParams.toString()}`
   );
@@ -294,9 +303,8 @@ export async function fetchProducts(productName: string, page = "1") {
     page: String(page),
     limit: String(PRODUCTS_PER_PAGE),
     sort: "new",
-    longitude: favAddress.longitude,
-    latitude: favAddress.latitude,
   });
+  appendFavAddressParams(searchParams, favAddress);
   const res = await getData<{ data: Product[]; meta: { itemCount: number } }>(
     `${endpoints.products.products}?${searchParams.toString()}`
   );
