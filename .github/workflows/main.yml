@@ -32,14 +32,14 @@ jobs:
         run: |
           # Save the SSH key
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa_new
+          printf "%s\n" "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa_new
           chmod 600 ~/.ssh/id_rsa_new
       
           # Add server to known hosts
           ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
       
           # Run remote commands using SSH with the correct key
-          ssh -i ~/.ssh/id_rsa_new $SERVER_USER@$SERVER_IP << 'EOF'
+          ssh -i ~/.ssh/id_rsa_new -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
             source ~/.bashrc
             cd /var/www/omahally-store
             git stash
